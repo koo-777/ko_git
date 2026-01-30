@@ -4,8 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文字数カウント | Simple Character Counter</title>
-    <meta name="description" content="リアルタイムで文字数をカウントするシンプルなWebツール。空白・改行の除外設定も可能。">
+    <title>文字数カウント | Apexia Lab</title>
+    <meta name="description" content="入力したテキストの文字数をリアルタイムでカウントします。空白や改行の除外設定、40文字ガイド表示など、執筆作業に便利な機能を搭載。">
+
+    <!-- OGP Tags -->
+    <meta property="og:title" content="文字数カウント | Apexia Lab">
+    <meta property="og:description" content="入力したテキストの文字数をリアルタイムでカウントします。空白や改行の除外設定、40文字ガイド表示など、執筆作業に便利な機能を搭載。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://apexia-lab.vercel.app/char-count/">
+    <meta property="og:image" content="https://apexia-lab.vercel.app/assets/ogp-char-count.png">
+    <meta property="og:site_name" content="Apexia Lab">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="文字数カウント | Apexia Lab">
+    <meta name="twitter:description" content="入力したテキストの文字数をリアルタイムでカウントします。執筆作業に便利な機能を搭載。">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,6 +116,13 @@
                 </svg>
                 計測結果をコピー
             </button>
+            <div style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <a href="/privacy/"
+                    style="color: inherit; margin: 0 10px; text-decoration: none; opacity: 0.8; font-size: 0.85rem;">Privacy
+                    Policy</a>
+                <a href="mailto:contact@apexia-lab.vercel.app"
+                    style="color: inherit; margin: 0 10px; text-decoration: none; opacity: 0.8; font-size: 0.85rem;">Contact</a>
+            </div>
         </footer>
     </div>
     <script src="/assets/js/global-nav.js"></script>
