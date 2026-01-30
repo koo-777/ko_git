@@ -11,7 +11,7 @@
     // 2. Defines Header HTML
     const headerHTML = `
         <div class="gh-container">
-            <a href="/" class="gh-logo">Studio <span>XYZ</span></a>
+            <a href="/" class="gh-logo">Apexia <span>Lab</span></a>
             <nav class="gh-nav">
                 <a href="/" class="gh-link">Home</a>
                 <a href="/char-count/" class="gh-link">文字数</a>

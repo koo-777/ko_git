@@ -1,4 +1,4 @@
-# Studio XYZ - Web Tools Collection
+# Apexia Lab - Web Tools Collection
 
 便利なWebツールを集約したプロジェクト（モノレポ）です。
 Vercelのサブディレクトリ機能を活用し、単一ドメインで複数のツールを管理しています。
