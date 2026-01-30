@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字数カウント | Simple Character Counter</title>
+    <meta name="description" content="リアルタイムで文字数をカウントするシンプルなWebツール。空白・改行の除外設定も可能。">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400&family=BIZ+UDGothic&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>文字数カウント</h1>
+            <p>シンプル・高速・安全な文字数計測ツール</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8;">※1行あたり40文字、中央（20文字）に区切り線を表示しています</p>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section">
+                <textarea id="textInput" placeholder="ここにテキストを入力してください..." autofocus></textarea>
+                <div class="action-bar">
+                    <button id="clearBtn" class="btn btn-outline" aria-label="テキストを消去">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                        クリア
+                    </button>
+                    <button id="copyTextBtn" class="btn btn-primary" aria-label="テキストをコピー">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        コピー
+                    </button>
+                </div>
+            </section>
+
+            <section class="stats-section">
+                <div class="stat-card total-count">
+                    <div class="stat-label">総文字数</div>
+                    <div class="stat-value" id="countTotal">0</div>
+                </div>
+
+                <div class="sub-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">空白除外</div>
+                        <div class="stat-value" id="countNoSpace">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">改行除外</div>
+                        <div class="stat-value" id="countNoNewline">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">行数</div>
+                        <div class="stat-value" id="countLines">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="settings-section">
+                <!-- Count Settings -->
+                <h3>カウント設定</h3>
+                <div class="settings-group">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="excludeSpaces">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">空白を除外</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="excludeNewlines">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">改行を除外</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="excludeTabs" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">タブを除外</span>
+                    </label>
+                </div>
+
+                <!-- Visual Guide Settings (Removed as it is now standard 40 chars) -->
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <button id="copyResultBtn" class="btn btn-text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                計測結果をコピー
+            </button>
+        </footer>
+    </div>
+    <script src="/assets/js/global-nav.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

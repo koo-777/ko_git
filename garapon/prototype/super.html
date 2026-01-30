@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シンプル・ガラガラポン</title>
+    <style>
+        :root { --machine-color: #f1c40f; --bg-color: #f0f8ff; }
+        body { display: flex; flex-direction: column; align-items: center; background-color: var(--bg-color); font-family: sans-serif; padding: 20px; }
+        .main-layout { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; max-width: 1100px; }
+        
+        /* 抽選機 */
+        .machine-area { text-align: center; width: 320px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .machine-container { position: relative; width: 200px; height: 220px; margin: 20px auto; }
+        .machine-body { width: 150px; height: 150px; background-color: var(--machine-color); border: 5px solid #333; border-radius: 30px; position: relative; margin: 0 auto; z-index: 2; }
+        .rotating { animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(720deg); } }
+        .exit { position: absolute; bottom: 40px; right: 10px; width: 40px; height: 20px; background: #95a5a6; border: 3px solid #333; border-radius: 5px; z-index: 1; }
+        .ball { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; position: absolute; bottom: 40px; right: 15px; opacity: 0; z-index: 0; }
+        .ball-drop { animation: drop 0.6s forwards; }
+        @keyframes drop { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(70px) translateX(50px); opacity: 1; } }
+
+        /* カードデザイン */
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 450px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 13px; }
+        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; }
+        input { padding: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        input[type="number"] { width: 45px; }
+
+        .btn { padding: 8px 15px; cursor: pointer; border-radius: 50px; border: none; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: #2ecc71; color: white; }
+        .btn-refill { background: #3498db; color: white; }
+        .btn-draw { background: #ff7675; color: white; font-size: 20px; width: 100%; margin-top: 15px; }
+        .btn-delete { background: #ff4757; color: white; padding: 5px 8px; font-size: 11px; }
+        .btn:disabled { background: #ccc; }
+        
+        .history-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; border-top: 1px solid #eee; }
+        .history-item { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #f9f9f9; font-size: 13px; }
+        .history-dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; border: 1px solid #ccc; }
+        
+        #result-text { margin-top: 20px; font-size: 20px; font-weight: bold; min-height: 1.5em; color: #2d3436; }
+        .stock-label { font-size: 10px; color: #888; display: block; }
+    </style>
+</head>
+<body>
+
+    <h1>手動補充ガラガラポン</h1>
+
+    <div class="main-layout">
+        <div class="machine-area">
+            <div class="machine-container">
+                <div id="machine" class="machine-body"></div>
+                <div class="exit"></div>
+                <div id="ball" class="ball"></div>
+            </div>
+            <div id="result-text">準備ができました！</div>
+            <button id="draw-btn" class="btn btn-draw" onclick="startLottery()">まわす！</button>
+        </div>
+
+        <div class="card">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+                <h3 style="margin:0;">設定と補充</h3>
+                <div>
+                    <button class="btn btn-add" onclick="addRow()">＋賞追加</button>
+                    <button class="btn btn-refill" onclick="refillAll()">🔄 玉を補充</button>
+                </div>
+            </div>
+            <table id="settings-table">
+                <thead>
+                    <tr>
+                        <th>色</th>
+                        <th>賞の名前</th>
+                        <th>初期数</th>
+                        <th>現在の在庫</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="settings-body"></tbody>
+            </table>
+            <p style="font-size:11px; color:#666;">※初期数：補充ボタンを押した時にこの数に戻ります。</p>
+        </div>
+
+        <div class="card" style="width:300px;">
+            <h3>抽選履歴</h3>
+            <ul id="history-list" class="history-list"></ul>
+            <button class="btn" style="font-size:11px; margin-top:10px; background:#eee;" onclick="clearHistory()">履歴リセット</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            loadSettings();
+            loadHistory();
+        };
+
+        // --- 設定と保存 ---
+        function saveSettings() {
+            const rows = document.querySelectorAll('#settings-table tbody tr');
+            const settings = Array.from(rows).map(row => {
+                const inputs = row.querySelectorAll('input');
+                return { 
+                    color: inputs[0].value, 
+                    name: inputs[1].value, 
+                    init: inputs[2].value, 
+                    stock: inputs[3].value 
+                };
+            });
+            localStorage.setItem('garagara_v2_settings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('garagara_v2_settings');
+            const data = saved ? JSON.parse(saved) : [
+                { color: '#ffd700', name: '金賞', init: '1', stock: '1' },
+                { color: '#ffffff', name: 'ハズレ', init: '10', stock: '10' }
+            ];
+            const tbody = document.getElementById('settings-body');
+            tbody.innerHTML = '';
+            data.forEach(item => addRow(item.color, item.name, item.init, item.stock));
+        }
+
+        function addRow(color="#3498db", name="新賞品", init="5", stock="5") {
+            const tbody = document.getElementById('settings-body');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="color" value="${color}" onchange="saveSettings()"></td>
+                <td><input type="text" value="${name}" onchange="saveSettings()"></td>
+                <td><input type="number" value="${init}" min="0" onchange="saveSettings()"></td>
+                <td style="font-weight:bold;"><input type="number" value="${stock}" min="0" onchange="saveSettings()"></td>
+                <td><button class="btn btn-delete" onclick="this.closest('tr').remove(); saveSettings();">消す</button></td>
+            `;
+            tbody.appendChild(row);
+            saveSettings();
+        }
+
+        // --- 補充機能 ---
+        function refillAll() {
+            if(!confirm('すべての在庫を初期数まで補充しますか？')) return;
+            const rows = document.querySelectorAll('#settings-table tbody tr');
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const initValue = inputs[2].value; // 初期数
+                inputs[3].value = initValue;      // 現在の在庫に反映
+            });
+            saveSettings();
+            document.getElementById('result-text').innerText = "玉を補充しました！";
+        }
+
+        // --- 履歴機能 ---
+        function addHistory(prize) {
+            const saved = JSON.parse(localStorage.getItem('garagara_v2_history') || '[]');
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            saved.unshift({ time: timeStr, color: prize.color, name: prize.name });
+            localStorage.setItem('garagara_v2_history', JSON.stringify(saved.slice(0, 50)));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            const saved = JSON.parse(localStorage.getItem('garagara_v2_history') || '[]');
+            list.innerHTML = saved.map(item => `
+                <li class="history-item">
+                    <span style="color:#888; font-size:11px; width:40px;">${item.time}</span>
+                    <div class="history-dot" style="background-color: ${item.color}"></div>
+                    <span>${item.name}</span>
+                </li>
+            `).join('');
+        }
+
+        function loadHistory() { renderHistory(); }
+        function clearHistory() { localStorage.removeItem('garagara_v2_history'); renderHistory(); }
+
+        // --- 抽選ロジック ---
+        function startLottery() {
+            const btn = document.getElementById('draw-btn');
+            const machine = document.getElementById('machine');
+            const ball = document.getElementById('ball');
+            const resultText = document.getElementById('result-text');
+
+            const rows = document.querySelectorAll('#settings-table tbody tr');
+            let prizes = [];
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const stock = parseInt(inputs[3].value);
+                if (stock > 0) {
+                    prizes.push({ color: inputs[0].value, name: inputs[1].value, stock: stock, inputElement: inputs[3] });
+                }
+            });
+
+            if (prizes.length === 0) {
+                resultText.innerText = "玉がありません！補充してください。";
+                return;
+            }
+
+            btn.disabled = true;
+            resultText.innerText = "抽選中...";
+            machine.classList.remove('rotating');
+            ball.classList.remove('ball-drop');
+            void machine.offsetWidth;
+            machine.classList.add('rotating');
+
+            const totalStock = prizes.reduce((sum, p) => sum + p.stock, 0);
+            let random = Math.floor(Math.random() * totalStock);
+            let selected = prizes.find(p => (random -= p.stock) < 0);
+
+            setTimeout(() => {
+                ball.style.backgroundColor = selected.color;
+                ball.classList.add('ball-drop');
+                setTimeout(() => {
+                    resultText.innerText = `出た！【${selected.name}】`;
+                    selected.inputElement.value = selected.stock - 1;
+                    saveSettings();
+                    addHistory(selected);
+                    btn.disabled = false;
+                }, 600);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
