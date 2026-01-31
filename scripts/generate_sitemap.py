@@ -2,7 +2,7 @@ import os
 import datetime
 
 # Domain configuration
-DOMAIN = 'https://www.apexia-labs.com'
+DOMAIN = 'https://apexia-labs.com'
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Pages to include (Root + Tools + Privacy)
