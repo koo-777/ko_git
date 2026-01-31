@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Image to PDF | Apexia Lab</title>
+    <meta name="description" content="Convert multiple images to a single PDF file securely in your browser.">
+
+    <!-- OGP Tags -->
+    <meta property="og:title" content="Simple Image to PDF | Apexia Lab">
+    <meta property="og:description" content="Convert multiple images to a single PDF file securely in your browser.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://apexia-labs.com/img-to-pdf/">
+    <meta property="og:image" content="https://apexia-labs.com/assets/ogp-default.png">
+    <meta property="og:site_name" content="Apexia Lab">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Simple Image to PDF | Apexia Lab">
+    <meta name="twitter:description" content="Convert multiple images to a single PDF file securely in your browser.">
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Load jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Load SortableJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+</head>
+
+<body>
+    <h1>Simple Image to PDF</h1>
+
+    <div class="main-container">
+        <div id="drop-zone" class="drop-zone">
+            <p>ここに画像をドラッグ＆ドロップ<br>またはクリックして選択</p>
+            <input type="file" id="file-input" accept="image/jpeg, image/png" multiple style="display: none;">
+        </div>
+
+        <div id="preview-area" class="preview-area">
+            <!-- Thumbnails will be injected here -->
+        </div>
+
+        <div class="controls">
+            <button id="generate-btn" class="btn primary" disabled>PDFを作成・ダウンロード</button>
+            <button id="clear-btn" class="btn secondary" style="display: none;">全消去</button>
+        </div>
+
+        <div id="status-message"></div>
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 1rem;">
+            <a href="/privacy/" style="color: inherit; margin: 0 10px; text-decoration: none;">Privacy Policy</a>
+            <a href="https://x.com/" target="_blank" rel="noopener noreferrer"
+                style="color: inherit; margin: 0 10px; text-decoration: none;">Contact (X)</a>
+        </div>
+        <p>&copy; 2026 Apexia Lab. All rights reserved.</p>
+    </footer>
+
+    <script src="/assets/js/global-nav.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
