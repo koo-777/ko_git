@@ -1,4 +1,10 @@
 {
   "cleanUrls": true,
-  "trailingSlash": true
+  "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/diag-lib/:path*",
+      "destination": "https://diag-lib.vercel.app/diag-lib/:path*"
+    }
+  ]
 }
