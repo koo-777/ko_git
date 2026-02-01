@@ -2,6 +2,10 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/diag-lib",
+      "destination": "https://diag-lib.vercel.app/diag-lib"
+    },
+    {
       "source": "/diag-lib/:path*",
       "destination": "https://diag-lib.vercel.app/diag-lib/:path*"
     }
