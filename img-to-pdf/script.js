@@ -7,6 +7,7 @@ const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const previewArea = document.getElementById('preview-area');
 const generateBtn = document.getElementById('generate-btn');
+const reverseBtn = document.getElementById('reverse-btn');
 const clearBtn = document.getElementById('clear-btn');
 const statusMessage = document.getElementById('status-message');
 
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Button Events
     generateBtn.addEventListener('click', generatePDF);
+    reverseBtn.addEventListener('click', reverseOrder);
     clearBtn.addEventListener('click', clearAll);
 
     // SortableJS Initialization
@@ -41,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (evt.oldIndex !== evt.newIndex) {
                 const item = images.splice(evt.oldIndex, 1)[0];
                 images.splice(evt.newIndex, 0, item);
+                updateImageIndices();
                 showStatus('並び替えました', 'info');
             }
         }
@@ -62,24 +65,61 @@ function handleFiles(files) {
         // Append to DOM directly
         const el = document.createElement('div');
         el.className = 'preview-item';
+
+        // Image Index span will be updated by updateImageIndices()
         el.innerHTML = `
-            <img src="${url}">
-            <button class="remove-btn" onclick="removeImage(this)">×</button>
-        `;
+                <span class="image-index"></span>
+                <img src="${url}">
+                <button class="remove-btn" onclick="removeImage(this)">×</button>
+            `;
         previewArea.appendChild(el);
     });
 
+    updateImageIndices();
     updateUIStatus();
+}
+
+// Updates the number (1, 2, 3...) on each image
+function updateImageIndices() {
+    const items = previewArea.children;
+    for (let i = 0; i < items.length; i++) {
+        const indexSpan = items[i].querySelector('.image-index');
+        if (indexSpan) {
+            indexSpan.textContent = i + 1;
+        }
+    }
+}
+
+// Reverse the order of images
+function reverseOrder() {
+    if (images.length === 0) return;
+
+    images.reverse();
+
+    // Re-append elements in new order
+    // Note: images array is source of truth for order, but we need to map to DOM elements
+    // Actually, easiest is to clear and rebuild, but to save DOM/URL churn, let's just re-append existing nodes.
+    // We need to map images back to DOM nodes? No, DOM nodes are simple.
+    // Safer way: Screen scramble?
+    // Let's just reverse the DOM nodes directly.
+
+    const items = Array.from(previewArea.children);
+    items.reverse().forEach(item => previewArea.appendChild(item));
+
+    updateImageIndices();
+    showStatus('並び順を逆にしました', 'info');
 }
 
 // Focuses on button state/message
 function updateUIStatus() {
     if (images.length > 0) {
         generateBtn.disabled = false;
+        reverseBtn.style.display = 'inline-block';
         clearBtn.style.display = 'inline-block';
         showStatus(`${images.length}枚の画像を選択中 (ドラッグで並び替え可能)`, 'info');
     } else {
         generateBtn.disabled = true;
+        reverseBtn.style.display = 'none';
         clearBtn.style.display = 'none';
         showStatus('', '');
     }
@@ -94,6 +134,7 @@ window.removeImage = (btn) => {
         URL.revokeObjectURL(images[index].url);
         images.splice(index, 1);
         item.remove();
+        updateImageIndices();
         updateUIStatus();
     }
 };
@@ -111,37 +152,49 @@ async function generatePDF() {
 
     try {
         generateBtn.disabled = true;
-        generateBtn.textContent = '生成中...';
-        showStatus('PDFを生成しています...', 'info');
 
-        const doc = new jsPDF();
+        // Get selected quality
+        const qualitySelect = document.getElementById('quality-select');
+        const qualityFn = parseFloat(qualitySelect.value) || 0.8;
 
-        for (let i = 0; i < images.length; i++) {
-            const imgData = await loadImage(images[i].url);
-            const props = doc.getImageProperties(imgData);
+        const total = images.length;
 
-            // Calculate dimensions to fit/contain
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
+        let doc = null;
 
-            // Simple fit logic (width priority)
-            const ratio = props.width / props.height;
-            const pdfWidth = pageWidth;
-            const pdfHeight = pageWidth / ratio;
+        for (let i = 0; i < total; i++) {
+            // Update status
+            const progress = Math.round(((i + 1) / total) * 100);
+            generateBtn.textContent = `生成中... ${progress}%`;
+            showStatus(`画像処理中... (${i + 1}/${total})`, 'info');
 
-            // If image height is greater than page height, scale by height instead
-            // But usually PDF fitting strictly to page width is expected for document scanners.
-            // Let's stick to width fit for now, but handle multiple pages.
+            // Give UI a moment to update
+            await new Promise(r => setTimeout(r, 10));
 
-            // Support multipage if height overflows? No, specification says "Add Page".
-            // "Assign selected images to PDF pages".
+            // Load and Compress Image with selected quality
+            const imgData = await compressImage(images[i].url, qualityFn);
 
-            if (i > 0) doc.addPage();
+            // Get properties of compressed image (it returns data URL)
+            const props = await getImageProperties(imgData);
+            const width = props.width;
+            const height = props.height;
 
-            // Optional: Check if image needs rotation (landscape/portrait match)
-            // But KISS.
+            if (i === 0) {
+                // Initialize PDF with the dimensions of the first image
+                // Orientation: 'p' (portrait) or 'l' (landscape) based on dimensions
+                const orientation = width > height ? 'l' : 'p';
+                doc = new jsPDF({
+                    orientation: orientation,
+                    unit: 'px',
+                    format: [width, height]
+                });
+            } else {
+                // Add new page with specific dimensions
+                const orientation = width > height ? 'l' : 'p';
+                doc.addPage([width, height], orientation);
+            }
 
-            doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            // Draw image at 0,0 filling the page
+            doc.addImage(imgData, 'JPEG', 0, 0, width, height);
         }
 
         doc.save('images.pdf');
@@ -155,10 +208,46 @@ async function generatePDF() {
     }
 }
 
-function loadImage(url) {
+// Helper to get dimensions of a Data URL
+function getImageProperties(dataUrl) {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.onload = () => resolve(img);
+        img.onload = () => resolve({ width: img.width, height: img.height });
+        img.onerror = reject;
+        img.src = dataUrl;
+    });
+}
+
+// Optimizes image: Resize to max 2000px and compress to JPEG with specified quality
+function compressImage(url, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 2000;
+
+            // Resize if too large
+            if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                } else {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // JPEG Compression
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+        };
         img.onerror = reject;
         img.src = url;
     });
