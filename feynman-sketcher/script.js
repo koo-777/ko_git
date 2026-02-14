@@ -496,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.querySelector('.close-modal');
 
     btnExportPng.addEventListener('click', () => {
+        deselectAll();
         // Konva to DataURL
         // Hide grid?
         gridLayer.hide();
@@ -557,6 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // SVG Export
     btnExportSvg.addEventListener('click', () => {
+        deselectAll();
         const svgContent = generateSVG(nodes, edges, width, height);
         const blob = new Blob([svgContent], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
@@ -565,6 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PDF Export
     btnExportPdf.addEventListener('click', () => {
+        deselectAll();
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
             orientation: 'landscape',
