@@ -247,7 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const labelsLayer = document.getElementById('labels-layer');
 
     btnLabel.addEventListener('click', () => {
-        addLabel(width / 2, height / 2, "\\gamma");
+        // labelModal is defined below, need to hoist or move definition up
+        const labelModal = document.getElementById('label-select-modal');
+        labelModal.classList.remove('hidden');
     });
 
     function addLabel(x, y, text) {
