@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Data ---
     const CONSTANTS = [
-        { symbol: 'c', name: 'Speed of Light', value: '2.99792458e8', unit: '$\\mathrm{m/s}$' },
-        { symbol: 'h', name: 'Planck Constant', value: '6.62607015e-34', unit: '$\\mathrm{J{\\cdot}s}$' },
-        { symbol: 'ℏ', name: 'Reduced Planck Constant', value: '1.054571817e-34', unit: '$\\mathrm{J{\\cdot}s}$' },
-        { symbol: 'e', name: 'Elementary Charge', value: '1.602176634e-19', unit: '$\\mathrm{C}$' },
-        { symbol: 'G', name: 'Gravitational Constant', value: '6.67430e-11', unit: '$\\mathrm{m^3{\\cdot}kg^{-1}{\\cdot}s^{-2}}$' },
-        { symbol: 'k_B', name: 'Boltzmann Constant', value: '1.380649e-23', unit: '$\\mathrm{J/K}$' }
+        { symbol: 'c', name: 'Speed of Light', value: '2.99792458e8', unit: '$\\text{m/s}$' },
+        { symbol: 'h', name: 'Planck Constant', value: '6.62607015e-34', unit: '$\\text{J}\\cdot\\text{s}$' },
+        { symbol: 'ℏ', name: 'Reduced Planck Constant', value: '1.054571817e-34', unit: '$\\text{J}\\cdot\\text{s}$' },
+        { symbol: 'e', name: 'Elementary Charge', value: '1.602176634e-19', unit: '$\\text{C}$' },
+        { symbol: 'G', name: 'Gravitational Constant', value: '6.67430e-11', unit: '$\\text{m}^3\\cdot\\text{kg}^{-1}\\cdot\\text{s}^{-2}$' },
+        { symbol: 'k_B', name: 'Boltzmann Constant', value: '1.380649e-23', unit: '$\\text{J/K}$' }
     ];
 
     // ... (ratios omitted for brevity, no changes needed there) ...
