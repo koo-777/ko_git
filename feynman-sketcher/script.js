@@ -247,9 +247,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const labelsLayer = document.getElementById('labels-layer');
 
     btnLabel.addEventListener('click', () => {
-        // labelModal is defined below, need to hoist or move definition up
         const labelModal = document.getElementById('label-select-modal');
         labelModal.classList.remove('hidden');
+    });
+
+    // Modal Logic
+    const labelModal = document.getElementById('label-select-modal');
+    const closeLabelModal = document.getElementById('close-label-modal');
+    const particleBtns = document.querySelectorAll('.particle-btn');
+    const customInput = document.getElementById('custom-label-input');
+    const btnAddCustom = document.getElementById('btn-add-custom');
+
+    if (window.MathJax) {
+        window.MathJax.typesetPromise([labelModal]).catch(e => console.log(e));
+    }
+
+    closeLabelModal.addEventListener('click', () => {
+        labelModal.classList.add('hidden');
+    });
+
+    particleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tex = btn.getAttribute('data-tex');
+            addLabel(width / 2, height / 2, tex);
+            labelModal.classList.add('hidden');
+        });
+    });
+
+    btnAddCustom.addEventListener('click', () => {
+        const tex = customInput.value;
+        if (tex) {
+            addLabel(width / 2, height / 2, tex);
+            labelModal.classList.add('hidden');
+            customInput.value = '';
+        }
     });
 
     function addLabel(x, y, text) {
