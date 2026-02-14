@@ -632,9 +632,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Arrow at midpoint
             const midX = (x1 + x2) / 2;
             const midY = (y1 + y2) / 2;
-            // Simple triangle marker? Or path?
-            // Transform for interaction
-            path += `<polygon points="-8,-4 0,0 -8,4" fill="black" transform="translate(${midX}, ${midY}) rotate(${angle})"/>`;
+            // Centered Arrow (Size 24)
+            // Tip at 12, Base at -12
+            path += `<polygon points="-12,-12 12,0 -12,12" fill="black" transform="translate(${midX}, ${midY}) rotate(${angle})"/>`;
             return path;
         }
         else if (type === 'scalar') {
