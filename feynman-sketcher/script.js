@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             },
             name: 'vertex',
-            id: 'node-' + Date.now()
+            id: 'node-' + Date.now() + '-' + Math.floor(Math.random() * 1000)
         });
 
         // Hover effect
