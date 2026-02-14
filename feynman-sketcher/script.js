@@ -75,6 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
             stroke: 'white',
             strokeWidth: 2,
             draggable: true,
+            dragBoundFunc: function (pos) {
+                const gridSize = 20;
+                return {
+                    x: Math.round(pos.x / gridSize) * gridSize,
+                    y: Math.round(pos.y / gridSize) * gridSize
+                };
+            },
             name: 'vertex',
             id: 'node-' + Date.now()
         });
@@ -103,6 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         node.on('dragstart', () => {
             if (currentTool !== 'select') node.stopDrag();
+        });
+
+        node.on('dragend', () => {
+            // Force snap on end (fallback)
+            const gridSize = 20;
+            const x = Math.round(node.x() / gridSize) * gridSize;
+            const y = Math.round(node.y() / gridSize) * gridSize;
+            node.position({ x, y });
+            updateConnectedEdges(node);
+            nodeLayer.batchDraw();
         });
 
         nodes.push(node);
