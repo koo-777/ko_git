@@ -529,6 +529,118 @@ document.addEventListener('DOMContentLoaded', () => {
         tikzModal.classList.add('hidden');
     });
 
+    const btnExportSvg = document.getElementById('btn-export-svg');
+    const btnExportPdf = document.getElementById('btn-export-pdf');
+
+    // SVG Export
+    btnExportSvg.addEventListener('click', () => {
+        const svgContent = generateSVG(nodes, edges, width, height);
+        const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        downloadURI(url, 'feynman-diagram.svg');
+    });
+
+    // PDF Export
+    btnExportPdf.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [width, height]
+        });
+
+        gridLayer.hide();
+        // High quality scale
+        const dataURL = stage.toDataURL({ pixelRatio: 2 });
+        gridLayer.show();
+
+        pdf.addImage(dataURL, 'PNG', 0, 0, width, height);
+        pdf.save('feynman-diagram.pdf');
+    });
+
+    // --- SVG Generator ---
+    function generateSVG(nodes, edges, w, h) {
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+        svg += `<rect width="100%" height="100%" fill="white"/>`; // Background
+
+        // Edges
+        edges.forEach(edge => {
+            const start = nodes.find(n => n.id() === edge.startNode);
+            const end = nodes.find(n => n.id() === edge.endNode);
+            if (!start || !end) return;
+
+            svg += getEdgeSVG(start.x(), start.y(), end.x(), end.y(), edge.edgeType);
+        });
+
+        // Nodes
+        nodes.forEach(node => {
+            svg += `<circle cx="${node.x()}" cy="${node.y()}" r="4" fill="black" />`;
+        });
+
+        svg += `</svg>`;
+        return svg;
+    }
+
+    function getEdgeSVG(x1, y1, x2, y2, type) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+        let path = '';
+        let stroke = 'black';
+        let dash = '';
+        let fill = 'none';
+
+        if (type === 'fermion') {
+            // Line
+            path += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="black" stroke-width="2"/>`;
+            // Arrow at midpoint
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2;
+            // Simple triangle marker? Or path?
+            // Transform for interaction
+            path += `<polygon points="-8,-4 0,0 -8,4" fill="black" transform="translate(${midX}, ${midY}) rotate(${angle})"/>`;
+            return path;
+        }
+        else if (type === 'scalar') {
+            return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="black" stroke-width="2" stroke-dasharray="8,6"/>`;
+        }
+        else if (type === 'photon') {
+            // Wavy path
+            const amplitude = 5;
+            const frequency = 0.08;
+            const cycles = len * frequency;
+            const step = len / (cycles * 20);
+
+            let d = `M 0 0 `;
+            for (let i = 0; i <= len; i += step) {
+                const y = amplitude * Math.sin(i * (Math.PI * 2 * frequency));
+                d += `L ${i} ${y} `;
+            }
+            return `<path d="${d}" stroke="black" stroke-width="2" fill="none" transform="translate(${x1}, ${y1}) rotate(${angle})"/>`;
+        }
+        else if (type === 'gluon') {
+            // Coil path
+            const amplitude = 6;
+            const frequency = 0.06;
+            const steps = len * 2;
+            const loops = len * frequency;
+
+            let d = `M 0 0 `;
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const xBase = t * len;
+                const theta = t * loops * Math.PI * 2;
+                const x = xBase + (amplitude * 0.8) * Math.cos(theta + Math.PI);
+                const y = amplitude * Math.sin(theta + Math.PI);
+                d += `L ${x} ${y} `;
+            }
+            return `<path d="${d}" stroke="black" stroke-width="2" fill="none" transform="translate(${x1}, ${y1}) rotate(${angle})"/>`;
+        }
+        return '';
+    }
+
     document.getElementById('btn-copy-tikz').addEventListener('click', () => {
         tikzOutput.select();
         document.execCommand('copy');
