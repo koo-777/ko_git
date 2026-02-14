@@ -1,0 +1,95 @@
+:root {
+    --primary-color: #3b82f6;
+    --text-color: #1f2937;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --input-bg: #f9fafb;
+    --input-border: #d1d5db;
+    --input-focus: #3b82f6;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.converter-container {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1.25rem;
+    font-family: 'Roboto Mono', monospace;
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input::placeholder {
+    color: #9ca3af;
+}
+
+footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .converter-container {
+        padding: 1.5rem;
+        box-shadow: none;
+        background-color: transparent;
+    }
+    
+    input {
+        font-size: 1.1rem;
+    }
+}
