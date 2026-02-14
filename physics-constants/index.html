@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Constants & Units | Apexia Lab</title>
+    <meta name="description" content="物理定数と単位変換のダッシュボード。エネルギー、反応断面積、自然単位系の計算をサポート。">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">← Apexia Lab</a>
+            <h1>Physics Constants & Units</h1>
+            <p class="subtitle">物理定数と単位変換のダッシュボード</p>
+        </header>
+
+        <main>
+            <!-- SECTION 1: Constants -->
+            <section class="section">
+                <h2>Physical Constants</h2>
+                <div class="constants-grid" id="constants-grid">
+                    <!-- Injected via JS -->
+                </div>
+            </section>
+
+            <!-- SECTION 2: Energy Converter -->
+            <section class="section">
+                <h2>Energy Converter</h2>
+                <div class="converter-box" id="energy-converter">
+                    <div class="input-group">
+                        <label>Joule ($J$)</label>
+                        <input type="text" data-unit="J" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Electronvolt ($eV$)</label>
+                        <input type="text" data-unit="eV" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Giga-electronvolt ($GeV$)</label>
+                        <input type="text" data-unit="GeV" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Erg ($erg$)</label>
+                        <input type="text" data-unit="erg" placeholder="Value">
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Cross Section Converter -->
+            <section class="section">
+                <h2>Cross Section Converter</h2>
+                <div class="converter-box" id="cs-converter">
+                    <div class="input-group">
+                        <label>Square Meter ($m^2$)</label>
+                        <input type="text" data-unit="m2" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Square Centimeter ($cm^2$)</label>
+                        <input type="text" data-unit="cm2" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Barn ($b$)</label>
+                        <input type="text" data-unit="b" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Millibarn ($mb$)</label>
+                        <input type="text" data-unit="mb" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Microbarn ($\mu b$)</label>
+                        <input type="text" data-unit="ub" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Nanobarn ($nb$)</label>
+                        <input type="text" data-unit="nb" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Picobarn ($pb$)</label>
+                        <input type="text" data-unit="pb" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Femtobarn ($fb$)</label>
+                        <input type="text" data-unit="fb" placeholder="Value">
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Natural Units -->
+            <section class="section">
+                <h2>Natural Units Converter ($GeV^{-2} \leftrightarrow mb$)</h2>
+                <div class="converter-box natural-units" id="natural-converter">
+                    <div class="input-group">
+                        <label>Inverse GeV Squared ($GeV^{-2}$)</label>
+                        <input type="text" data-unit="gevm2" placeholder="Value">
+                    </div>
+                    <div class="equals">=</div>
+                    <div class="input-group">
+                        <label>Millibarn ($mb$)</label>
+                        <input type="text" data-unit="mb" placeholder="Value">
+                    </div>
+                    <p class="note">Conversion Factor: $1 \ GeV^{-2} = 0.389379 \ mb$</p>
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <div style="margin-bottom: 1rem;">
+                <a href="/privacy/" style="color: #9ca3af; margin: 0 10px; text-decoration: none;">Privacy Policy</a>
+                <a href="mailto:contact@apexia-labs.com"
+                    style="color: #9ca3af; margin: 0 10px; text-decoration: none;">Contact (Email)</a>
+            </div>
+            <p>&copy; 2026 Apexia Lab. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+    <!-- Common Header Injection -->
+    <script src="/assets/js/global-nav.js"></script>
+</body>
+
+</html>
