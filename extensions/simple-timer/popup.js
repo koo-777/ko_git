@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('reset-btn');
     const statusMsg = document.getElementById('status-msg');
     const deleteTaskBtn = document.getElementById('delete-task-btn');
+    const copyLogBtn = document.getElementById('copy-log-btn');
 
     let tasks = [];
     let activeTaskId = null;
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const task = getTask(activeTaskId);
         if (!task) return;
 
-        if (task.isRunning) {
+        if (isTaskRunning(task)) {
             stopTask(task);
         } else {
             startTask(task);
@@ -47,11 +48,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    copyLogBtn.addEventListener('click', () => {
+        const task = getTask(activeTaskId);
+        if (task) {
+            const log = generateLogMarkdown(task);
+            copyToClipboard(log);
+        }
+    });
+
     // --- Logic ---
 
     function loadTasks() {
         chrome.storage.local.get(['tasks', 'activeTaskId'], (result) => {
             tasks = result.tasks || [];
+
+            // Migration: Check if tasks have 'history' property. If not, reset/migrate.
+            // For simplicity in this dev phase, if data format is old, we'll reset or wrap it.
+            // Let's reset if it looks like old format to ensure clean history.
+            if (tasks.length > 0 && !tasks[0].history) {
+                console.log("Migrating old data format...");
+                tasks = [];
+            }
+
             if (tasks.length === 0) {
                 // Create default task if none exist
                 tasks.push(createTaskObject('Task 1'));
@@ -72,9 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return {
             id: Date.now().toString(),
             name: name,
-            startTime: null,
-            elapsedTime: 0,
-            isRunning: false
+            history: [] // Array of { start: timestamp, end: timestamp|null }
         };
     }
 
@@ -99,27 +115,34 @@ document.addEventListener('DOMContentLoaded', () => {
         renderUI();
     }
 
+    function isTaskRunning(task) {
+        if (!task.history || task.history.length === 0) return false;
+        const lastSegment = task.history[task.history.length - 1];
+        return lastSegment.end === null;
+    }
+
     function startTask(task) {
-        task.isRunning = true;
-        task.startTime = Date.now();
+        // Start a new segment
+        task.history.push({
+            start: Date.now(),
+            end: null
+        });
         saveTasks();
         renderUI();
     }
 
     function stopTask(task) {
-        // Calculate accrued time
-        const now = Date.now();
-        task.elapsedTime += (now - task.startTime);
-        task.startTime = null; // Clear start time
-        task.isRunning = false;
+        // Find running segment and close it
+        const lastSegment = task.history[task.history.length - 1];
+        if (lastSegment && lastSegment.end === null) {
+            lastSegment.end = Date.now();
+        }
         saveTasks();
         renderUI();
     }
 
     function resetTask(task) {
-        task.isRunning = false;
-        task.startTime = null;
-        task.elapsedTime = 0;
+        task.history = [];
         saveTasks();
         renderUI();
     }
@@ -140,6 +163,83 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.set({
             tasks: tasks,
             activeTaskId: activeTaskId
+        });
+    }
+
+    function calculateTotalTime(task) {
+        let total = 0;
+        const now = Date.now();
+        task.history.forEach(segment => {
+            if (segment.end) {
+                total += (segment.end - segment.start);
+            } else {
+                total += (now - segment.start);
+            }
+        });
+        return total;
+    }
+
+    // --- Log Generation ---
+    function generateLogMarkdown(task) {
+        if (!task.history || task.history.length === 0) {
+            return `# Process Log: ${task.name}\nNo activity recorded.`;
+        }
+
+        const formatDate = (ts) => new Date(ts).toLocaleString();
+        const formatDuration = (ms) => {
+            const s = Math.floor(ms / 1000);
+            const m = Math.floor(s / 60);
+            const h = Math.floor(m / 60);
+            return `${pad(h)}:${pad(m % 60)}:${pad(s % 60)}`;
+        };
+
+        const firstStart = task.history[0].start;
+        const lastSegment = task.history[task.history.length - 1];
+        const lastEnd = lastSegment.end ? lastSegment.end : Date.now();
+        const isRunning = lastSegment.end === null;
+
+        let md = `# Process Log: ${task.name}\n`;
+        md += `Start: ${formatDate(firstStart)}\n`;
+        md += `End: ${isRunning ? 'Running...' : formatDate(lastEnd)}\n\n`;
+
+        // Pauses
+        const pauses = [];
+        for (let i = 0; i < task.history.length - 1; i++) {
+            const currentEnd = task.history[i].end;
+            const nextStart = task.history[i + 1].start;
+            if (currentEnd && nextStart > currentEnd) {
+                pauses.push({
+                    start: currentEnd,
+                    end: nextStart,
+                    duration: nextStart - currentEnd
+                });
+            }
+        }
+
+        if (pauses.length > 0) {
+            md += `## Pauses\n`;
+            pauses.forEach((p, index) => {
+                md += `${index + 1}. ${formatDate(p.start)} - ${formatDate(p.end)} (Duration: ${formatDuration(p.duration)})\n`;
+            });
+            md += `\n`;
+        } else {
+            md += `## Pauses\nNone\n\n`;
+        }
+
+        md += `Total Work Time: ${formatDuration(calculateTotalTime(task))}\n`;
+        return md;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = copyLogBtn.textContent;
+            copyLogBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyLogBtn.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            alert('Failed to copy log.');
         });
     }
 
@@ -170,20 +270,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const task = getTask(activeTaskId);
         if (!task) return;
 
-        // Update Name Input if not focused (to avoid overwriting user typing if re-rendered)
+        // Update Name Input if not focused
         if (document.activeElement !== taskNameInput) {
             taskNameInput.value = task.name;
         }
 
-        // Calculate Time
-        let totalTime = task.elapsedTime;
-        if (task.isRunning) {
-            totalTime += (Date.now() - task.startTime);
-        }
-        timerDisplay.textContent = formatTime(totalTime);
+        const running = isTaskRunning(task);
+        timerDisplay.textContent = formatTime(calculateTotalTime(task));
 
         // Update Buttons
-        if (task.isRunning) {
+        if (running) {
             startStopBtn.textContent = 'Stop';
             startStopBtn.classList.add('stop');
             statusMsg.textContent = 'Running...';
