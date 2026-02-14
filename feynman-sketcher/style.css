@@ -1,0 +1,274 @@
+:root {
+    --toolbar-bg: #1e293b;
+    --toolbar-text: #f8fafc;
+    --canvas-bg: #ffffff;
+    --panel-bg: #f1f5f9;
+    --primary: #3b82f6;
+    --danger: #ef4444;
+    --grid-color: #e2e8f0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Toolbar */
+.toolbar {
+    width: 60px;
+    background: var(--toolbar-bg);
+    color: var(--toolbar-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    gap: 20px;
+    z-index: 10;
+}
+
+.tool-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tool-group h3 {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0 0 5px 0;
+    text-align: center;
+}
+
+.tool-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--toolbar-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+}
+
+.tool-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.tool-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tool-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.tool-btn.danger:hover {
+    background: var(--danger);
+}
+
+.tool-btn.warning:hover {
+    background: #f59e0b;
+}
+
+.back-link {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.7rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    margin-top: auto;
+    padding: 10px 0;
+}
+
+/* Canvas Area */
+.canvas-area {
+    flex: 1;
+    position: relative;
+    background: var(--canvas-bg);
+    overflow: hidden;
+    /* Grid Pattern */
+    background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+#konva-container {
+    width: 100%;
+    height: 100%;
+}
+
+#labels-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to Konva */
+}
+
+.math-label {
+    position: absolute;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    pointer-events: auto;
+    /* Enable interaction for labels */
+    cursor: grab;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.math-label.selected {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Properties Panel */
+.properties-panel {
+    width: 250px;
+    background: var(--panel-bg);
+    border-left: 1px solid #e2e8f0;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.properties-panel h2 {
+    font-size: 1rem;
+    margin: 0;
+    color: #334155;
+}
+
+.properties-panel h3 {
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem 0;
+    color: #64748b;
+}
+
+.placeholder-text {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.prop-row {
+    margin-bottom: 10px;
+}
+
+.prop-row label {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    color: #64748b;
+}
+
+.prop-input {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.action-btn:hover {
+    background: #2563eb;
+}
+
+.action-btn.secondary {
+    background: #e2e8f0;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.action-btn.secondary:hover {
+    background: #cbd5e1;
+}
+
+.export-section {
+    margin-top: auto;
+}
+
+/* Modal */
+.hidden {
+    display: none !important;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90vw;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#tikz-output {
+    width: 100%;
+    height: 300px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    resize: vertical;
+}

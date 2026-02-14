@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feynman Diagram Sketcher | Apexia Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Konva for Canvas Rendering -->
+    <script src="https://unpkg.com/konva@9.3.3/konva.min.js"></script>
+    <!-- MathJax for Labels -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Toolbar -->
+        <aside class="toolbar">
+            <div class="tool-group">
+                <h3>Tools</h3>
+                <button class="tool-btn active" data-tool="select" title="Select / Move">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4V2z" />
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="vertex" title="Add Vertex">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="6" fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <h3>Propagators</h3>
+                <button class="tool-btn" data-tool="fermion" title="Fermion (Electron/Quark)">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-width="2" d="M3 12h18M15 8l4 4-4 4" />
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="photon" title="Photon / Boson (Wavy)">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-width="2"
+                            d="M2 12c1.3 0 1.3-3 2.6-3s1.3 3 2.6 3 1.3-3 2.6-3 1.3 3 2.6 3 1.3-3 2.6-3 1.3 3 2.6 3 1.3-3 2.6-3 1.3 3 2.6 3 1.3-3 2.6-3 1.3 3 2.6 3" />
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="gluon" title="Gluon (Loopy)">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-width="2"
+                            d="M3 12c0-2 2-2 2 0s2 2 2 0 2-2 2 0 2 2 2 0 2-2 2 0 2 2 2 0 2-2 2 0 2 2 2 0" />
+                    </svg>
+                </button>
+                <button class="tool-btn" data-tool="scalar" title="Scalar (Dashed)">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4" d="M3 12h18" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <h3>Actions</h3>
+                <button class="tool-btn" id="btn-label" title="Add Label">
+                    Label
+                </button>
+                <button class="tool-btn danger" id="btn-delete" title="Delete Selected">
+                    🗑️
+                </button>
+                <button class="tool-btn warning" id="btn-clear" title="Clear Canvas">
+                    Clear
+                </button>
+            </div>
+            <div class="tool-group">
+                <a href="/" class="back-link">← Home</a>
+            </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <main class="canvas-area">
+            <div id="konva-container"></div>
+            <div id="labels-layer"></div> <!-- HTML overlay for MathJax labels -->
+        </main>
+
+        <!-- Properties Panel -->
+        <aside class="properties-panel">
+            <h2>Properties</h2>
+            <div id="selection-info">
+                <p class="placeholder-text">Select an object to edit properties.</p>
+            </div>
+
+            <div class="export-section">
+                <h3>Export</h3>
+                <button class="action-btn" id="btn-export-png">Download PNG</button>
+                <button class="action-btn secondary" id="btn-export-tikz">Generate TikZ</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- TikZ Export Modal -->
+    <div id="tikz-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>TikZ-Feynman Code</h2>
+            <p>Copy this code into your LaTeX document. Requires <code>\usepackage{tikz-feynman}</code>.</p>
+            <textarea id="tikz-output" readonly></textarea>
+            <button class="action-btn" id="btn-copy-tikz">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script src="propagators.js"></script>
+    <script src="tikz-exporter.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
