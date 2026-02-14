@@ -2,13 +2,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Data ---
     const CONSTANTS = [
-        { symbol: 'c', name: 'Speed of Light', value: '2.99792458e8', unit: 'm/s' },
-        { symbol: 'h', name: 'Planck Constant', value: '6.62607015e-34', unit: 'J⋅s' },
-        { symbol: 'ℏ', name: 'Reduced Planck Constant', value: '1.054571817e-34', unit: 'J⋅s' },
-        { symbol: 'e', name: 'Elementary Charge', value: '1.602176634e-19', unit: 'C' },
-        { symbol: 'G', name: 'Gravitational Constant', value: '6.67430e-11', unit: 'm³⋅kg⁻¹⋅s⁻²' },
-        { symbol: 'k_B', name: 'Boltzmann Constant', value: '1.380649e-23', unit: 'J/K' }
+        { symbol: 'c', name: 'Speed of Light', value: '2.99792458e8', unit: '$\\mathrm{m/s}$' },
+        { symbol: 'h', name: 'Planck Constant', value: '6.62607015e-34', unit: '$\\mathrm{J{\\cdot}s}$' },
+        { symbol: 'ℏ', name: 'Reduced Planck Constant', value: '1.054571817e-34', unit: '$\\mathrm{J{\\cdot}s}$' },
+        { symbol: 'e', name: 'Elementary Charge', value: '1.602176634e-19', unit: '$\\mathrm{C}$' },
+        { symbol: 'G', name: 'Gravitational Constant', value: '6.67430e-11', unit: '$\\mathrm{m^3{\\cdot}kg^{-1}{\\cdot}s^{-2}}$' },
+        { symbol: 'k_B', name: 'Boltzmann Constant', value: '1.380649e-23', unit: '$\\mathrm{J/K}$' }
     ];
+
+    // ... (ratios omitted for brevity, no changes needed there) ...
+
+    // --- Render Constants ---
+    const constantsGrid = document.getElementById('constants-grid');
+    CONSTANTS.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'constant-card';
+        card.innerHTML = `
+            <div class="constant-symbol">$${c.symbol}$</div>
+            <div class="constant-name">${c.name}</div>
+            <div class="constant-value">${c.value}<span class="unit">${c.unit}</span></div>
+        `;
+        card.addEventListener('click', () => copyToClipboard(c.value));
+        constantsGrid.appendChild(card);
+    });
+
+    // Trigger MathJax to render the newly injected content
+    if (window.MathJax) {
+        window.MathJax.typesetPromise([constantsGrid]).catch((err) => console.log('MathJax error:', err));
+    }
 
     // Conversion Ratios (Base: Joule)
     const ENERGY_RATIOS = {
