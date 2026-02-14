@@ -10,7 +10,7 @@ function getLineGeometry(x1, y1, x2, y2) {
 }
 
 // 1. Photon (Wavy Line)
-function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.2) {
+function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.12) {
     return new Konva.Shape({
         x: x1,
         y: y1,
@@ -19,29 +19,26 @@ function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.2) {
         sceneFunc: function (context, shape) {
             const { length, angle } = getLineGeometry(0, 0, x2 - x1, y2 - y1);
 
+            // ... (rest is same)
             context.beginPath();
             context.save();
-            context.rotate(angle); // Rotate to align with line
+            context.rotate(angle);
 
             // Draw Sine Wave
-            // Number of cycles depends on length
             const cycles = length * frequency;
-            const step = length / (cycles * 20); // resolution
+            const step = length / (cycles * 20);
 
             context.moveTo(0, 0);
             for (let i = 0; i <= length; i += step) {
-                // Sine wave equation: y = A * sin(k * x)
-                // Normalize 0..length -> radians? No, k controls freq
                 const y = amplitude * Math.sin(i * (Math.PI * 2 * frequency));
                 context.lineTo(i, y);
             }
-            context.lineTo(length, 0); // Ensure it ends exactly
+            context.lineTo(length, 0);
 
             context.restore();
             context.strokeShape(shape);
         },
         hitFunc: function (context, shape) {
-            // Expanded hit area for easier selection
             const { length, angle } = getLineGeometry(0, 0, x2 - x1, y2 - y1);
             context.beginPath();
             context.save();
@@ -57,7 +54,7 @@ function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.2) {
 }
 
 // 2. Gluon (Loopy Line)
-function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.15) {
+function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.1) {
     return new Konva.Shape({
         x: x1,
         y: y1,
