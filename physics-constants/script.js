@@ -72,19 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         n_time: 6.582119e-25 // GeV^-1 in seconds
     };
 
-    // --- Render Constants ---
-    const constantsGrid = document.getElementById('constants-grid');
-    CONSTANTS.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'constant-card';
-        card.innerHTML = `
-            <div class="constant-symbol">$${c.symbol}$</div>
-            <div class="constant-name">${c.name}</div>
-            <div class="constant-value">${c.value}<span class="unit">${c.unit}</span></div>
-        `;
-        card.addEventListener('click', () => copyToClipboard(c.value));
-        constantsGrid.appendChild(card);
-    });
+
 
     // --- Utils ---
 
