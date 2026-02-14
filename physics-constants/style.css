@@ -121,25 +121,60 @@ h2 {
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1.5rem;
 }
 
-.converter-box.natural-units {
+.kinematics-box {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.natural-units-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sub-converter h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #4b5563;
+    margin-bottom: 1rem;
+}
+
+.converter-row {
     display: flex;
     align-items: center;
+    gap: 1rem;
     flex-wrap: wrap;
+}
+
+.converter-row .input-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.arrow {
+    color: #9ca3af;
+    font-size: 1.2rem;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 
 .input-group label {
     font-size: 0.85rem;
     color: #4b5563;
     margin-bottom: 0.5rem;
+    white-space: nowrap;
 }
 
 input {
@@ -152,10 +187,70 @@ input {
     box-sizing: border-box;
 }
 
+.input-with-unit {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-unit input {
+    padding-right: 3.5rem;
+}
+
+.unit-label {
+    position: absolute;
+    right: 10px;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
 input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.operator {
+    font-size: 1.5rem;
+    color: #9ca3af;
+    padding-bottom: 0.75rem;
+    /* align */
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-basis: 100%;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn.primary:hover {
+    background: #2563eb;
+}
+
+.btn.secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn.secondary:hover {
+    background: #d1d5db;
 }
 
 .equals {

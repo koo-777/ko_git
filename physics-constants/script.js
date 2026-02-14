@@ -18,19 +18,38 @@ document.addEventListener('DOMContentLoaded', () => {
         erg: 1e-7
     };
 
+    // Cross Section Constants
+    // 1 mb = 1e-31 m^2
+    // 1 GeV^-2 = 0.389379 mb = 0.389379e-31 m^2
+    const MB_IN_M2 = 1e-31;
+    const GEV2_IN_MB = 0.389379;
+
     // Conversion Ratios (Base: m^2)
     const CS_RATIOS = {
         m2: 1,
         cm2: 1e-4,
         b: 1e-28,
-        mb: 1e-31, // 1e-3 * b
-        ub: 1e-34, // 1e-6 * b
-        nb: 1e-37, // 1e-9 * b
-        pb: 1e-40, // 1e-12 * b
-        fb: 1e-43  // 1e-15 * b
+        mb: MB_IN_M2,             // 1e-3 * b
+        ub: 1e-34,                // 1e-6 * b
+        nb: 1e-37,                // 1e-9 * b
+        pb: 1e-40,                // 1e-12 * b
+        fb: 1e-43,                // 1e-15 * b
+        gevm2: GEV2_IN_MB * MB_IN_M2 // ~3.89e-32
     };
 
-    const NAT_CONVERT_FACTOR = 0.389379; // 1 GeV^-2 = 0.389379 mb
+    // Natural Units Conversion Factors
+    // Length: 1 GeV^-1 = 0.197326 fm = 0.197326e-15 m
+    const LEN_RATIOS = {
+        m: 1,
+        fm: 1e-15,
+        n_len: 0.197326e-15 // GeV^-1 in meters
+    };
+
+    // Time: 1 GeV^-1 = 6.582119e-25 s
+    const TIME_RATIOS = {
+        s: 1,
+        n_time: 6.582119e-25 // GeV^-1 in seconds
+    };
 
     // --- Render Constants ---
     const constantsGrid = document.getElementById('constants-grid');
@@ -46,26 +65,49 @@ document.addEventListener('DOMContentLoaded', () => {
         constantsGrid.appendChild(card);
     });
 
-    // --- Converters ---
+    // --- Utils ---
 
     // Helper: Parse scientific float
     const parseVal = (str) => {
         if (!str) return NaN;
+        // Handle "1.2 * 10^-5" style if pasted? For now standard float/e-notation
         return parseFloat(str);
     };
 
     // Helper: Format with scientific notation if needed
     const formatVal = (num) => {
         if (isNaN(num)) return '';
+        if (num === 0) return '0';
         if (Math.abs(num) < 1e-3 || Math.abs(num) > 1e4) {
             return num.toExponential(4).replace('e+', 'e'); // simplify e+
         }
         return parseFloat(num.toPrecision(6)).toString(); // clean float
     };
 
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast(`Copied: ${text}`);
+        });
+    };
+
+    const showToast = (msg) => {
+        let toast = document.querySelector('.toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    };
+
+    // --- Converters ---
+
     // Generic setup for a group of inputs derived from a base unit
     function setupConverter(containerId, ratios) {
         const container = document.getElementById(containerId);
+        if (!container) return;
         const inputs = container.querySelectorAll('input');
 
         inputs.forEach(input => {
@@ -74,8 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const unit = e.target.dataset.unit;
 
                 if (isNaN(val)) {
-                    // Clear others if invalid but also allow typing partials?
-                    // Better to just not update if empty/invalid yet
                     if (e.target.value === '') {
                         inputs.forEach(i => { if (i !== e.target) i.value = ''; });
                     }
@@ -98,50 +138,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupConverter('energy-converter', ENERGY_RATIOS);
     setupConverter('cs-converter', CS_RATIOS);
+    setupConverter('length-converter', LEN_RATIOS);
+    setupConverter('time-converter', TIME_RATIOS);
 
 
-    setupNaturalConverter();
-    function setupNaturalConverter() {
-        const container = document.getElementById('natural-converter');
-        const inputGev = container.querySelector('input[data-unit="gevm2"]');
-        const inputMb = container.querySelector('input[data-unit="mb"]');
+    // --- Kinematics Calculator ---
+    const kE = document.getElementById('k-E');
+    const kP = document.getElementById('k-p');
+    const kM = document.getElementById('k-m');
+    const kBtn = document.getElementById('calc-k-btn');
+    const kReset = document.getElementById('reset-k-btn');
+    const kError = document.getElementById('k-error');
 
-        inputGev.addEventListener('input', () => {
-            const val = parseVal(inputGev.value);
-            if (isNaN(val)) {
-                if (inputGev.value === '') inputMb.value = '';
-                return;
-            }
-            inputMb.value = formatVal(val * NAT_CONVERT_FACTOR);
-        });
+    kBtn.addEventListener('click', () => {
+        const E = parseVal(kE.value);
+        const p = parseVal(kP.value);
+        const m = parseVal(kM.value);
 
-        inputMb.addEventListener('input', () => {
-            const val = parseVal(inputMb.value);
-            if (isNaN(val)) {
-                if (inputMb.value === '') inputGev.value = '';
-                return;
-            }
-            inputGev.value = formatVal(val / NAT_CONVERT_FACTOR);
-        });
-    }
+        kError.style.display = 'none';
 
+        // Count inputs
+        const inputs = [E, p, m];
+        const validCount = inputs.filter(v => !isNaN(v)).length;
 
-    // --- Utils ---
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`Copied: ${text}`);
-        });
-    }
-
-    function showToast(msg) {
-        let toast = document.querySelector('.toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.className = 'toast';
-            document.body.appendChild(toast);
+        if (validCount !== 2) {
+            showError("Please enter exactly two values.");
+            return;
         }
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+
+        try {
+            if (isNaN(E)) {
+                // Calculate E = sqrt(p^2 + m^2)
+                const res = Math.sqrt(p * p + m * m);
+                kE.value = formatVal(res);
+            } else if (isNaN(p)) {
+                // Calculate p = sqrt(E^2 - m^2)
+                if (E < m) throw new Error("E cannot be less than m");
+                const res = Math.sqrt(E * E - m * m);
+                kP.value = formatVal(res);
+            } else if (isNaN(m)) {
+                // Calculate m = sqrt(E^2 - p^2)
+                if (E < p) throw new Error("E cannot be less than p");
+                const res = Math.sqrt(E * E - p * p);
+                kM.value = formatVal(res);
+            }
+        } catch (e) {
+            showError(e.message);
+        }
+    });
+
+    kReset.addEventListener('click', () => {
+        kE.value = '';
+        kP.value = '';
+        kM.value = '';
+        kError.style.display = 'none';
+    });
+
+    function showError(msg) {
+        kError.textContent = msg;
+        kError.style.display = 'block';
     }
+
 });

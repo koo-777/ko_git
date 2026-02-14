@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physics Constants & Units | Apexia Lab</title>
-    <meta name="description" content="物理定数と単位変換のダッシュボード。エネルギー、反応断面積、自然単位系の計算をサポート。">
+    <meta name="description" content="物理定数と単位変換のダッシュボード。相対論的運動学、エネルギー、反応断面積、自然単位系の計算をサポート。">
     <link rel="stylesheet" href="style.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -16,11 +16,47 @@
         <header>
             <a href="/" class="back-link">← Apexia Lab</a>
             <h1>Physics Constants & Units</h1>
-            <p class="subtitle">物理定数と単位変換のダッシュボード</p>
+            <p class="subtitle">物理定数・単位変換・運動学計算ダッシュボード</p>
         </header>
 
         <main>
-            <!-- SECTION 1: Constants -->
+            <!-- SECTION 1: Relativistic Kinematics -->
+            <section class="section">
+                <h2>Relativistic Kinematics ($E^2 = p^2 + m^2$)</h2>
+                <div class="converter-box kinematics-box" id="kinematics-calculator">
+                    <div class="input-group">
+                        <label>Energy ($E$)</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="k-E" placeholder="Values (GeV)">
+                            <span class="unit-label">GeV</span>
+                        </div>
+                    </div>
+                    <div class="operator">=</div>
+                    <div class="input-group">
+                        <label>Momentum ($p$)</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="k-p" placeholder="Values (GeV/c)">
+                            <span class="unit-label">GeV/c</span>
+                        </div>
+                    </div>
+                    <div class="operator">+</div>
+                    <div class="input-group">
+                        <label>Mass ($m$)</label>
+                        <div class="input-with-unit">
+                            <input type="text" id="k-m" placeholder="Values (GeV/c²)">
+                            <span class="unit-label">GeV/c²</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button id="calc-k-btn" class="btn primary">Calculate Missing</button>
+                        <button id="reset-k-btn" class="btn secondary">Reset</button>
+                    </div>
+                    <p class="note" id="k-error" style="display:none; color: #ef4444; width: 100%;">Error: Invalid input
+                        or unphysical values.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Constants -->
             <section class="section">
                 <h2>Physical Constants</h2>
                 <div class="constants-grid" id="constants-grid">
@@ -28,7 +64,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 2: Energy Converter -->
+            <!-- SECTION 3: Energy Converter -->
             <section class="section">
                 <h2>Energy Converter</h2>
                 <div class="converter-box" id="energy-converter">
@@ -51,17 +87,13 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: Cross Section Converter -->
+            <!-- SECTION 4: Cross Section Converter -->
             <section class="section">
                 <h2>Cross Section Converter</h2>
                 <div class="converter-box" id="cs-converter">
                     <div class="input-group">
-                        <label>Square Meter ($m^2$)</label>
-                        <input type="text" data-unit="m2" placeholder="Value">
-                    </div>
-                    <div class="input-group">
-                        <label>Square Centimeter ($cm^2$)</label>
-                        <input type="text" data-unit="cm2" placeholder="Value">
+                        <label>Inverse GeV Sq ($GeV^{-2}$)</label>
+                        <input type="text" data-unit="gevm2" placeholder="Value">
                     </div>
                     <div class="input-group">
                         <label>Barn ($b$)</label>
@@ -87,23 +119,57 @@
                         <label>Femtobarn ($fb$)</label>
                         <input type="text" data-unit="fb" placeholder="Value">
                     </div>
+                    <div class="input-group">
+                        <label>Square Centimeter ($cm^2$)</label>
+                        <input type="text" data-unit="cm2" placeholder="Value">
+                    </div>
+                    <div class="input-group">
+                        <label>Square Meter ($m^2$)</label>
+                        <input type="text" data-unit="m2" placeholder="Value">
+                    </div>
                 </div>
             </section>
 
-            <!-- SECTION 4: Natural Units -->
+            <!-- SECTION 5: Natural Units (Length & Time) -->
             <section class="section">
-                <h2>Natural Units Converter ($GeV^{-2} \leftrightarrow mb$)</h2>
-                <div class="converter-box natural-units" id="natural-converter">
-                    <div class="input-group">
-                        <label>Inverse GeV Squared ($GeV^{-2}$)</label>
-                        <input type="text" data-unit="gevm2" placeholder="Value">
+                <h2>Natural Units Converter ($GeV^{-1} \leftrightarrow SI$)</h2>
+                <div class="converter-box natural-units-grid">
+                    <!-- Length -->
+                    <div class="sub-converter">
+                        <h3>Length ($1 \ GeV^{-1} \approx 0.197 \ fm$)</h3>
+                        <div class="converter-row" id="length-converter">
+                            <div class="input-group">
+                                <label>$GeV^{-1}$</label>
+                                <input type="text" data-unit="n_len" placeholder="Value">
+                            </div>
+                            <span class="arrow">↔</span>
+                            <div class="input-group">
+                                <label>Femtometer ($fm$)</label>
+                                <input type="text" data-unit="fm" placeholder="Value">
+                            </div>
+                            <span class="arrow">↔</span>
+                            <div class="input-group">
+                                <label>Meter ($m$)</label>
+                                <input type="text" data-unit="m" placeholder="Value">
+                            </div>
+                        </div>
                     </div>
-                    <div class="equals">=</div>
-                    <div class="input-group">
-                        <label>Millibarn ($mb$)</label>
-                        <input type="text" data-unit="mb" placeholder="Value">
+
+                    <!-- Time -->
+                    <div class="sub-converter">
+                        <h3>Time ($1 \ GeV^{-1} \approx 6.58 \times 10^{-25} \ s$)</h3>
+                        <div class="converter-row" id="time-converter">
+                            <div class="input-group">
+                                <label>$GeV^{-1}$</label>
+                                <input type="text" data-unit="n_time" placeholder="Value">
+                            </div>
+                            <span class="arrow">↔</span>
+                            <div class="input-group">
+                                <label>Second ($s$)</label>
+                                <input type="text" data-unit="s" placeholder="Value">
+                            </div>
+                        </div>
                     </div>
-                    <p class="note">Conversion Factor: $1 \ GeV^{-2} = 0.389379 \ mb$</p>
                 </div>
             </section>
 
