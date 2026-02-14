@@ -121,7 +121,7 @@ function createFermionLine(x1, y1, x2, y2) {
 
             // Arrowhead at Midpoint
             const mid = length / 2;
-            const arrowSize = 8;
+            const arrowSize = 24; // Increased 3x (was 8)
 
             context.beginPath();
             context.moveTo(mid - arrowSize, -arrowSize / 2);

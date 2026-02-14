@@ -488,6 +488,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Toggle Vertices ---
+    const toggleVertices = document.getElementById('toggle-vertices');
+
+    toggleVertices.addEventListener('change', (e) => {
+        const isVisible = e.target.checked;
+        nodeLayer.visible(isVisible);
+    });
+
     // --- Export ---
     const btnExportPng = document.getElementById('btn-export-png');
     const btnExportTikz = document.getElementById('btn-export-tikz');
