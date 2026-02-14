@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Log Generation ---
     function generateLogMarkdown(task) {
         if (!task.history || task.history.length === 0) {
-            return `# Process Log: ${task.name}\nNo activity recorded.`;
+            return `# ${task.name}\nNo activity recorded.`;
         }
 
         const formatDate = (ts) => new Date(ts).toLocaleString();
@@ -198,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastEnd = lastSegment.end ? lastSegment.end : Date.now();
         const isRunning = lastSegment.end === null;
 
-        let md = `# Process Log: ${task.name}\n`;
+        let md = `# ${task.name}\n\n`;
+        md += `## Total Work Time: ${formatDuration(calculateTotalTime(task))}\n\n`;
         md += `Start: ${formatDate(firstStart)}\n`;
         md += `End: ${isRunning ? 'Running...' : formatDate(lastEnd)}\n\n`;
 
@@ -217,16 +218,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (pauses.length > 0) {
-            md += `## Pauses\n`;
+            md += `### Pauses\n`;
             pauses.forEach((p, index) => {
                 md += `${index + 1}. ${formatDate(p.start)} - ${formatDate(p.end)} (Duration: ${formatDuration(p.duration)})\n`;
             });
             md += `\n`;
         } else {
-            md += `## Pauses\nNone\n\n`;
+            md += `### Pauses\nNone\n\n`;
         }
 
-        md += `Total Work Time: ${formatDuration(calculateTotalTime(task))}\n`;
         return md;
     }
 
