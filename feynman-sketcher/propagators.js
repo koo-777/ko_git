@@ -54,7 +54,7 @@ function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.06) {
 }
 
 // 2. Gluon (Loopy Line)
-function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.05) {
+function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.09) {
     return new Konva.Shape({
         x: x1,
         y: y1,
@@ -68,22 +68,13 @@ function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.05) {
             context.rotate(angle);
 
             // Draw Loops (Cycloid-ish)
-            // x(t) = r(t - sin t), y(t) = r(1 - cos t) ... modified for coil
-            // Simple coil approximation
-
-            const steps = length * 2; // high resolution
+            const steps = length * 2;
             const loops = length * frequency;
 
             for (let i = 0; i <= steps; i++) {
-                const t = i / steps; // 0 to 1
+                const t = i / steps;
                 const xBase = t * length;
-
-                // Coil logic
                 const theta = t * loops * Math.PI * 2;
-
-                // Add circular motion to linear progression
-                // x = base + r * cos(theta) ... careful with advance
-                // Standard spring projection:
                 const x = xBase + (amplitude * 0.8) * Math.cos(theta + Math.PI);
                 const y = amplitude * Math.sin(theta + Math.PI);
 
@@ -109,18 +100,50 @@ function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.05) {
     });
 }
 
-// 3. Fermion (Arrow)
+// 3. Fermion (Arrow at Midpoint)
 function createFermionLine(x1, y1, x2, y2) {
-    // We use Konva.Arrow but manually manage it to match style
-    return new Konva.Arrow({
-        points: [x1, y1, x2, y2],
-        pointerLength: 10,
-        pointerWidth: 10,
-        fill: 'black',
+    return new Konva.Shape({
+        x: x1,
+        y: y1,
         stroke: 'black',
         strokeWidth: 2,
+        fill: 'black',
+        sceneFunc: function (context, shape) {
+            const { length, angle } = getLineGeometry(0, 0, x2 - x1, y2 - y1);
+            context.beginPath();
+            context.save();
+            context.rotate(angle);
+
+            // Main Line
+            context.moveTo(0, 0);
+            context.lineTo(length, 0);
+            context.strokeShape(shape);
+
+            // Arrowhead at Midpoint
+            const mid = length / 2;
+            const arrowSize = 8;
+
+            context.beginPath();
+            context.moveTo(mid - arrowSize, -arrowSize / 2);
+            context.lineTo(mid, 0);
+            context.lineTo(mid - arrowSize, arrowSize / 2);
+            context.closePath();
+
+            context.fillShape(shape);
+            context.restore();
+        },
+        hitFunc: function (context, shape) {
+            const { length, angle } = getLineGeometry(0, 0, x2 - x1, y2 - y1);
+            context.beginPath();
+            context.save();
+            context.rotate(angle);
+            context.rect(0, -10, length, 20);
+            context.restore();
+            context.fillStrokeShape(shape);
+        },
         name: 'propagator',
-        type: 'fermion'
+        type: 'fermion',
+        startX: x1, startY: y1, endX: x2, endY: y2
     });
 }
 
