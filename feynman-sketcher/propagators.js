@@ -124,9 +124,12 @@ function createFermionLine(x1, y1, x2, y2) {
             const arrowSize = 24; // Increased 3x (was 8)
 
             context.beginPath();
-            context.moveTo(mid - arrowSize, -arrowSize / 2);
-            context.lineTo(mid, 0);
-            context.lineTo(mid - arrowSize, arrowSize / 2);
+            // Center the arrow on 'mid'
+            // Tip at mid + half size
+            // Base at mid - half size
+            context.moveTo(mid - arrowSize / 2, -arrowSize / 2);
+            context.lineTo(mid + arrowSize / 2, 0);
+            context.lineTo(mid - arrowSize / 2, arrowSize / 2);
             context.closePath();
 
             context.fillShape(shape);
