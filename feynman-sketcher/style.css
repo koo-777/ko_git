@@ -308,3 +308,68 @@ body {
     background: #f8fafc;
     resize: vertical;
 }
+
+/* Label Selection Modal */
+.label-modal {
+    max-width: 500px;
+}
+
+.modal-title {
+    margin-top: 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.particle-section h3 {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 1rem 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.particle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+}
+
+.particle-btn {
+    height: 40px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.particle-btn:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.custom-input-section {
+    margin-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+}
+
+.input-row input {
+    flex: 1;
+}
+
+.input-row button {
+    width: auto;
+    margin-bottom: 0;
+    padding: 0 1.5rem;
+}

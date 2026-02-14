@@ -112,6 +112,62 @@
         </aside>
     </div>
 
+    <!-- Label Selection Modal -->
+    <div id="label-select-modal" class="modal hidden">
+        <div class="modal-content label-modal">
+            <span class="close-modal" id="close-label-modal">&times;</span>
+            <h2 class="modal-title">Select Label</h2>
+
+            <div class="particle-section">
+                <h3>Leptons</h3>
+                <div class="particle-grid">
+                    <button class="particle-btn" data-tex="e^-">$e^-$</button>
+                    <button class="particle-btn" data-tex="e^+">$e^+$</button>
+                    <button class="particle-btn" data-tex="\mu^-">$\mu^-$</button>
+                    <button class="particle-btn" data-tex="\mu^+">$\mu^+$</button>
+                    <button class="particle-btn" data-tex="\tau^-">$\tau^-$</button>
+                    <button class="particle-btn" data-tex="\tau^+">$\tau^+$</button>
+                    <button class="particle-btn" data-tex="\nu">$\nu$</button>
+                    <button class="particle-btn" data-tex="\bar{\nu}">$\bar{\nu}$</button>
+                </div>
+            </div>
+
+            <div class="particle-section">
+                <h3>Quarks</h3>
+                <div class="particle-grid">
+                    <button class="particle-btn" data-tex="u">$u$</button>
+                    <button class="particle-btn" data-tex="d">$d$</button>
+                    <button class="particle-btn" data-tex="c">$c$</button>
+                    <button class="particle-btn" data-tex="s">$s$</button>
+                    <button class="particle-btn" data-tex="t">$t$</button>
+                    <button class="particle-btn" data-tex="b">$b$</button>
+                    <button class="particle-btn" data-tex="\bar{u}">$\bar{u}$</button>
+                    <button class="particle-btn" data-tex="\bar{d}">$\bar{d}$</button>
+                </div>
+            </div>
+
+            <div class="particle-section">
+                <h3>Bosons</h3>
+                <div class="particle-grid">
+                    <button class="particle-btn" data-tex="\gamma">$\gamma$</button>
+                    <button class="particle-btn" data-tex="g">$g$</button>
+                    <button class="particle-btn" data-tex="W^+">$W^+$</button>
+                    <button class="particle-btn" data-tex="W^-">$W^-$</button>
+                    <button class="particle-btn" data-tex="Z">$Z$</button>
+                    <button class="particle-btn" data-tex="H">$H$</button>
+                </div>
+            </div>
+
+            <div class="custom-input-section">
+                <h3>Custom LaTeX</h3>
+                <div class="input-row">
+                    <input type="text" id="custom-label-input" placeholder="\pi^0" class="prop-input">
+                    <button id="btn-add-custom" class="action-btn">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TikZ Export Modal -->
     <div id="tikz-modal" class="modal hidden">
         <div class="modal-content">
