@@ -10,7 +10,7 @@ function getLineGeometry(x1, y1, x2, y2) {
 }
 
 // 1. Photon (Wavy Line)
-function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.12) {
+function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.06) {
     return new Konva.Shape({
         x: x1,
         y: y1,
@@ -54,7 +54,7 @@ function createPhotonShape(x1, y1, x2, y2, amplitude = 5, frequency = 0.12) {
 }
 
 // 2. Gluon (Loopy Line)
-function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.1) {
+function createGluonShape(x1, y1, x2, y2, amplitude = 6, frequency = 0.05) {
     return new Konva.Shape({
         x: x1,
         y: y1,
