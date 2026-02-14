@@ -62,9 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Node Handling ---
     function createNode(x, y) {
+        // Snap to grid (20px)
+        const gridSize = 20;
+        const snappedX = Math.round(x / gridSize) * gridSize;
+        const snappedY = Math.round(y / gridSize) * gridSize;
+
         const node = new Konva.Circle({
-            x: x,
-            y: y,
+            x: snappedX,
+            y: snappedY,
             radius: 6,
             fill: '#000',
             stroke: 'white',
