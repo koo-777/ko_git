@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拡張機能のインストール方法 | Apexia Lab</title>
+    <meta name="description" content="Simple Work Timer拡張機能のインストール方法を解説します。">
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #111;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        ol {
+            margin-bottom: 2rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 1rem;
+        }
+
+        code {
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .note {
+            background-color: #fff7ed;
+            border-left: 4px solid #f97316;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #c2410c;
+        }
+
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+        }
+
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Global Header will be injected here -->
+
+    <div class="container">
+        <h1>拡張機能のインストール方法</h1>
+
+        <div class="note">
+            この拡張機能はChromeウェブストアで公開されていないため、手動でインストールする必要があります（デベロッパーモード）。
+        </div>
+
+        <ol>
+            <li>
+                <strong>ダウンロードと解凍</strong><br>
+                「Simple Work Timer」のZIPファイルをダウンロードし、展開（解凍）してください。<br>
+                <code>simple-timer</code> というフォルダが作成されます。
+            </li>
+            <li>
+                <strong>拡張機能管理画面を開く</strong><br>
+                Chromeのブラウザを開き、アドレスバーに <code>chrome://extensions</code> と入力してEnterキーを押してください。<br>
+                または、右上のメニューアイコン <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                </svg> から「拡張機能」→「拡張機能を管理」を選択します。
+            </li>
+            <li>
+                <strong>デベロッパーモードを有効にする</strong><br>
+                画面右上にある「デベロッパーモード」のスイッチを <strong>ON</strong> にしてください。
+            </li>
+            <li>
+                <strong>パッケージ化されていない拡張機能を読み込む</strong><br>
+                左上に表示される「パッケージ化されていない拡張機能を読み込む」ボタンをクリックします。
+            </li>
+            <li>
+                <strong>フォルダを選択</strong><br>
+                手順1で解凍した <code>simple-timer</code> フォルダを選択してください。
+            </li>
+        </ol>
+
+        <p>以上でインストールは完了です。ブラウザのツールバーにアイコンが表示されます。</p>
+
+        <footer>
+            <div style="margin-bottom: 1rem;">
+                <a href="/">Home</a>
+                <a href="/privacy/">Privacy Policy</a>
+                <a href="mailto:contact@apexia-labs.com">Contact</a>
+            </div>
+            <p>&copy; 2026 Apexia Lab. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Common Header Injection -->
+    <script src="/assets/js/global-nav.js"></script>
+</body>
+
+</html>
