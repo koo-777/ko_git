@@ -499,13 +499,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Konva to DataURL
         // Hide grid?
         gridLayer.hide();
-        // Labels are HTML, they won't appear in Konva export!
-        // Limitation: To export HTML labels, we need html2canvas or similar, OR manually render text in Konva for export.
-        // For now, let's just export the diagram lines/vertices.
+
+        // Add white background for export
+        const bg = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: stage.width(),
+            height: stage.height(),
+            fill: 'white'
+        });
+        gridLayer.add(bg);
+        bg.moveToBottom();
+        gridLayer.show(); // Show layer but with white bg covering grid? 
+        // No, gridLayer has the grid pattern in CSS? No, grid is CSS in style.css. 
+        // The gridLayer in Konva is empty? Ah, style.css has background-image.
+        // Konva export won't capture CSS background.
+        // So we MUST add a white rect.
+
+        // But we want to hide the grid dots/lines if they are in CSS? Yes.
+        // If we put a white rect in a bottom layer, it will cover transparent areas.
+
+        const exportLayer = new Konva.Layer();
+        stage.add(exportLayer);
+        exportLayer.add(bg);
+        exportLayer.moveToBottom();
 
         const dataURL = stage.toDataURL({ pixelRatio: 2 });
         downloadURI(dataURL, 'feynman-diagram.png');
 
+        // Cleanup
+        exportLayer.destroy();
         gridLayer.show();
     });
 
