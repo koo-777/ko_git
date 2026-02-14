@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual - Feynman Diagram Sketcher</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            overflow: auto;
+            /* Override app's hidden overflow */
+            background-color: #f8fafc;
+        }
+
+        .manual-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            color: #334155;
+            margin-top: 2rem;
+        }
+
+        h3 {
+            color: #475569;
+            margin-top: 1.5rem;
+        }
+
+        p,
+        li {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .icon-preview {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #1e293b;
+            color: white;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .icon-preview svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        img.screenshot {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="manual-container">
+        <a href="index.html" class="back-btn">← Back to Sketcher</a>
+
+        <h1>Feynman Diagram Sketcher User Manual</h1>
+        <p>直感的な操作でファインマン・ダイアグラムを作成し、画像やLaTeX (TikZ) コードとして書き出せるWebツールです。</p>
+
+        <h2>1. ツールバーの機能</h2>
+        <p>画面左側のツールバーから描画モードを切り替えます。</p>
+
+        <ul>
+            <li>
+                <strong>Select (選択/移動)</strong>:
+                頂点や線、ラベルを選択します。選択した状態でドラッグすると移動できます。
+            </li>
+            <li>
+                <strong>Vertex (頂点)</strong>:
+                キャンバスをクリックして、線の結合点となる「頂点（ドット）」を配置します。
+            </li>
+            <li>
+                <strong>Propagators (線)</strong>:
+                <ul>
+                    <li><strong>Fermion</strong>: 電子やクォーク（実線＋矢印）</li>
+                    <li><strong>Photon</strong>: 光子やW/Zボソン（波線）</li>
+                    <li><strong>Gluon</strong>: グルーオン（ループ線）</li>
+                    <li><strong>Scalar</strong>: ヒッグス粒子など（破線）</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>2. 基本的な描画手順</h2>
+        <ol>
+            <li>
+                <strong>頂点を置く</strong><br>
+                「Vertex」ツールを選び、キャンバス上の始点と終点になる場所をクリックして点を打ちます。
+            </li>
+            <li>
+                <strong>線をつなぐ</strong><br>
+                引きたい線の種類（例：Photon）を選びます。<br>
+                まず<strong>始点となる頂点</strong>をクリックし、次に<strong>終点となる頂点</strong>をクリックすると、その間に線が引かれます。
+            </li>
+            <li>
+                <strong>形を整える</strong><br>
+                「Select」ツールに切り替えて、頂点をドラッグして動かすと、つながっている線も自動的に追従します。
+            </li>
+        </ol>
+
+        <h2>3. ラベルの追加</h2>
+        <p>ツールバー下部の <strong>[Label]</strong> ボタンをクリックすると、数式ラベル（$\gamma$）が画面中央に追加されます。</p>
+        <ul>
+            <li><strong>移動</strong>: ラベルをドラッグして好きな場所に配置できます。</li>
+            <li><strong>編集</strong>: ラベルを選択すると、右側のプロパティパネルでテキストを編集できます。LaTeX形式（例: <code>e^-</code>,
+                <code>\mu^+</code>）に対応しています。</li>
+        </ul>
+
+        <h2>4. 編集と削除</h2>
+        <p>オブジェクトを選択すると、右側のパネルでプロパティを変更できます。</p>
+        <ul>
+            <li><strong>Reverse Direction</strong>: フェルミオンなどの矢印の向きを反転させます。（始点と終点を入れ替えます）</li>
+            <li><strong>削除</strong>: 選択した状態でツールバーの「ゴミ箱」アイコンをクリックすると削除されます。頂点を削除すると、接続されている線も削除されます。</li>
+        </ul>
+
+        <h2>5. エクスポート (書き出し)</h2>
+        <h3>画像として保存</h3>
+        <p>右側のパネルにある <strong>[Download PNG]</strong> ボタンを押すと、現在のキャンバスを画像ファイルとしてダウンロードできます。</p>
+
+        <h3>論文用 (TikZ)</h3>
+        <p><strong>[Generate TikZ]</strong> ボタンを押すと、LaTeX用のコードが生成されます。</p>
+        <p>このコードを使用するには、LaTeXのプリアンブルに <code>\usepackage{tikz-feynman}</code> を追加してください。</p>
+
+        <pre><code>\usepackage{tikz-feynman}
+...
+\begin{figure}
+  \centering
+  % ここに生成されたコードを貼り付け
+  \begin{feynman}
+    ...
+  \end{feynman}
+\end{figure}
+</code></pre>
+
+    </div>
+</body>
+
+</html>
