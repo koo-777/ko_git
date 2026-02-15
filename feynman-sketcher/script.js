@@ -713,14 +713,18 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Copied to clipboard!");
     });
 
-    // --- Persistence ---
-    function saveToLocalStorage() {
-        const state = {
+    // --- Persistence & JSON ---
+    function getSerializedState() {
+        return JSON.stringify({
             nodes: nodes.map(n => ({ id: n.id(), x: n.x(), y: n.y() })),
             edges: edges.map(e => ({ start: e.startNode, end: e.endNode, type: e.edgeType })),
             labels: labels.map(l => ({ id: l.id, x: l.x, y: l.y, text: l.text }))
-        };
-        localStorage.setItem('feynman_sketcher_state', JSON.stringify(state));
+        });
+    }
+
+    function saveToLocalStorage() {
+        const json = getSerializedState();
+        localStorage.setItem('feynman_sketcher_state', json);
     }
 
     function loadFromLocalStorage() {
