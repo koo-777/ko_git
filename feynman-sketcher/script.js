@@ -30,38 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     stage.add(nodeLayer);
 
     // --- Smart Layering Logic ---
+    // Labels are z-index 1 (bottom), Canvas is z-index 2 (top).
+    // Canvas always captures events (pointer-events: auto).
+    // We manually check if a click hits a label when it misses Konva shapes.
+
+    // Remove the previous mousemove listener if any (it was adding complexity/bugs).
     const konvaContainer = document.getElementById('konva-container');
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            konvaContainer.style.pointerEvents = 'auto';
-            return;
-        }
-
-        // Calculate position relative to stage
-        const rect = konvaContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        // Check if cursor is within stage bounds
-        if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
-            return; // Outside stage
-        }
-
-        const shape = stage.getIntersection({ x, y });
-        if (shape) {
-            konvaContainer.style.pointerEvents = 'auto';
-            document.body.style.cursor = 'pointer';
-        } else {
-            if (['vertex', 'fermion', 'photon', 'gluon', 'scalar'].includes(currentTool)) {
-                konvaContainer.style.pointerEvents = 'auto';
-                document.body.style.cursor = 'crosshair';
-            } else {
-                konvaContainer.style.pointerEvents = 'none';
-                document.body.style.cursor = 'default';
-            }
-        }
-    });
+    konvaContainer.style.pointerEvents = 'auto'; // Ensure always auto
 
     // --- Tools & UI ---
     const toolBtns = document.querySelectorAll('.tool-btn[data-tool]');
@@ -81,12 +56,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Interaction: Stage Click ---
-    stage.on('click', (e) => {
-        // If clicked on empty space
+    // --- Interaction: Stage Interaction ---
+    stage.on('mousedown', (e) => {
+        // If clicked on empty space (Konva-wise)
         if (e.target === stage) {
+            const pos = stage.getPointerPosition();
+
+            // Check if we hit a Label (Manual Hit Test)
+            // We need to check all labels to see if pos is within their DOM rect
+            // pos is relative to stage (top-left)
+
+            let hitLabel = null;
+            // Iterate reverse to hit top-most label if overlapping (though DOM stacking handles this usually)
+            for (let i = labels.length - 1; i >= 0; i--) {
+                const l = labels[i];
+                const rect = l.element.getBoundingClientRect();
+                const containerRect = konvaContainer.getBoundingClientRect();
+
+                // Label rect relative to container
+                const lx = rect.left - containerRect.left;
+                const ly = rect.top - containerRect.top;
+                const lw = rect.width;
+                const lh = rect.height;
+
+                if (pos.x >= lx && pos.x <= lx + lw && pos.y >= ly && pos.y <= ly + lh) {
+                    hitLabel = l;
+                    break;
+                }
+            }
+
+            if (hitLabel) {
+                // We hit a label!
+                if (currentTool === 'select') {
+                    selectLabel(hitLabel.element);
+                    startLabelDrag(e.evt, hitLabel.element); // Pass native event
+                }
+                return; // Stop processing (don't create vertex or deselect)
+            }
+
             if (currentTool === 'vertex') {
-                const pos = stage.getPointerPosition();
                 createNode(pos.x, pos.y);
             } else if (currentTool === 'select') {
                 deselectAll();
