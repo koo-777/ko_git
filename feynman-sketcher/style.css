@@ -371,8 +371,10 @@ body {
 .input-row button {
     width: auto;
     margin-bottom: 0;
+    padding: 0 1.5rem;
+}
 
-    /* Hide MathJax assistive MathML to prevent double labels in html2canvas export */
-    mjx-assistive-mml {
-        display: none !important;
-    }
+/* Hide MathJax assistive MathML to prevent double labels in html2canvas export */
+mjx-assistive-mml {
+    display: none !important;
+}
