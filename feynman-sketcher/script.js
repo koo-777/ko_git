@@ -535,30 +535,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const tikzOutput = document.getElementById('tikz-output');
     const closeModal = document.querySelector('.close-modal');
 
+    // --- Helper: Capture Canvas with Labels ---
+    function captureCanvas() {
+        return new Promise((resolve, reject) => {
+            deselectAll();
+            const canvasArea = document.querySelector('.canvas-area');
+
+            // Temporarily hide grid for clean export
+            const originalBg = canvasArea.style.backgroundImage;
+            canvasArea.style.backgroundImage = 'none';
+            canvasArea.style.backgroundColor = 'white';
+
+            html2canvas(canvasArea).then(canvas => {
+                // Restore styles
+                canvasArea.style.backgroundImage = originalBg;
+                canvasArea.style.backgroundColor = '';
+                resolve(canvas);
+            }).catch(err => {
+                // Restore styles
+                canvasArea.style.backgroundImage = originalBg;
+                canvasArea.style.backgroundColor = '';
+                reject(err);
+            });
+        });
+    }
+
     btnExportPng.addEventListener('click', () => {
-        deselectAll();
-
-        // Capture the entire canvas area (inc. labels)
-        const canvasArea = document.querySelector('.canvas-area');
-
-        // Temporarily hide grid for clean export
-        const originalBg = canvasArea.style.backgroundImage;
-        canvasArea.style.backgroundImage = 'none';
-        canvasArea.style.backgroundColor = 'white';
-
-        html2canvas(canvasArea).then(canvas => {
+        captureCanvas().then(canvas => {
             const dataURL = canvas.toDataURL('image/png');
             downloadURI(dataURL, 'feynman-diagram.png');
-
-            // Restore
-            canvasArea.style.backgroundImage = originalBg;
-            canvasArea.style.backgroundColor = '';
         }).catch(err => {
-            console.error("Export failed:", err);
-            alert("Export failed. See console.");
-            // Restore
-            canvasArea.style.backgroundImage = originalBg;
-            canvasArea.style.backgroundColor = '';
+            console.error("PNG Export failed:", err);
+            alert("Export failed.");
         });
     });
 
@@ -596,21 +604,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PDF Export
     btnExportPdf.addEventListener('click', () => {
-        deselectAll();
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [width, height]
+        captureCanvas().then(canvas => {
+            const { jsPDF } = window.jspdf;
+
+            // Use canvas dimensions
+            const imgData = canvas.toDataURL('image/png');
+            const pdfUserInfo = {
+                orientation: canvas.width > canvas.height ? 'l' : 'p',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            };
+
+            const pdf = new jsPDF(pdfUserInfo);
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('feynman-diagram.pdf');
+        }).catch(err => {
+            console.error("PDF Export failed:", err);
+            alert("Export failed.");
         });
-
-        gridLayer.hide();
-        // High quality scale
-        const dataURL = stage.toDataURL({ pixelRatio: 2 });
-        gridLayer.show();
-
-        pdf.addImage(dataURL, 'PNG', 0, 0, width, height);
-        pdf.save('feynman-diagram.pdf');
     });
 
     // --- SVG Generator ---
