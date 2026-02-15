@@ -596,6 +596,45 @@ document.addEventListener('DOMContentLoaded', () => {
             deselectAll();
             const canvasArea = document.querySelector('.canvas-area');
 
+            // Calculate Bounding Box
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            let hasContent = false;
+
+            // Check Nodes
+            nodes.forEach(n => {
+                hasContent = true;
+                minX = Math.min(minX, n.x() - 10);
+                minY = Math.min(minY, n.y() - 10);
+                maxX = Math.max(maxX, n.x() + 10);
+                maxY = Math.max(maxY, n.y() + 10);
+            });
+
+            // Check Labels
+            labels.forEach(l => {
+                hasContent = true;
+                const rect = l.element.getBoundingClientRect();
+                const containerRect = canvasArea.getBoundingClientRect();
+
+                const realX = rect.left - containerRect.left;
+                const realY = rect.top - containerRect.top;
+
+                minX = Math.min(minX, realX);
+                minY = Math.min(minY, realY);
+                maxX = Math.max(maxX, realX + rect.width);
+                maxY = Math.max(maxY, realY + rect.height);
+            });
+
+            if (!hasContent) {
+                minX = 0; minY = 0;
+                maxX = width; maxY = height;
+            } else {
+                const padding = 20;
+                minX = Math.max(0, minX - padding);
+                minY = Math.max(0, minY - padding);
+                maxX = Math.min(width, maxX + padding);
+                maxY = Math.min(height, maxY + padding);
+            }
+
             // Temporarily hide grid for clean export
             const originalBg = canvasArea.style.backgroundImage;
             canvasArea.style.backgroundImage = 'none';
