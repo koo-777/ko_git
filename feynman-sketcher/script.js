@@ -29,6 +29,28 @@ document.addEventListener('DOMContentLoaded', () => {
     stage.add(edgeLayer);
     stage.add(nodeLayer);
 
+    // --- Smart Layering Logic ---
+    const konvaContainer = document.getElementById('konva-container');
+    stage.on('mousemove', (e) => {
+        if (isDragging) {
+            konvaContainer.style.pointerEvents = 'auto';
+            return;
+        }
+        const shape = stage.getIntersection(stage.getPointerPosition());
+        if (shape) {
+            konvaContainer.style.pointerEvents = 'auto';
+            document.body.style.cursor = 'pointer';
+        } else {
+            if (['vertex', 'fermion', 'photon', 'gluon', 'scalar'].includes(currentTool)) {
+                konvaContainer.style.pointerEvents = 'auto';
+                document.body.style.cursor = 'crosshair';
+            } else {
+                konvaContainer.style.pointerEvents = 'none';
+                document.body.style.cursor = 'default';
+            }
+        }
+    });
+
     // --- Tools & UI ---
     const toolBtns = document.querySelectorAll('.tool-btn[data-tool]');
     toolBtns.forEach(btn => {
@@ -264,6 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         selectedObject = null;
+
+        // Hide Font Size Control
+        const labelPropsDiv = document.getElementById('label-properties');
+        if (labelPropsDiv) labelPropsDiv.style.display = 'none';
+
         updatePropertiesPanel(null);
         saveToLocalStorage();
     }
@@ -309,11 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function addLabel(x, y, text, save = true) {
+    function addLabel(x, y, text, save = true, fontSize = 16) {
         const div = document.createElement('div');
         div.className = 'math-label';
         div.style.left = x + 'px';
         div.style.top = y + 'px';
+        div.style.fontSize = fontSize + 'px';
         div.innerText = `$$${text}$$`; // Double $ for display math if needed, or single
         // Wait, user might input raw tex. Let's wrap in $...$ if not present? 
         // Better: Let user type raw LaTeX.
@@ -329,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         labelsLayer.appendChild(div);
 
-        const labelObj = { id: Date.now(), element: div, x, y, text };
+        const labelObj = { id: Date.now(), element: div, x, y, text, fontSize };
         labels.push(labelObj);
 
         // Render Math
@@ -343,6 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
         deselectAll();
         selectedObject = div;
         div.classList.add('selected');
+
+        // Show Font Size Control
+        const labelPropsDiv = document.getElementById('label-properties');
+        const fontSizeInput = document.getElementById('label-font-size');
+        if (labelPropsDiv) {
+            labelPropsDiv.style.display = 'block';
+            const currentSize = parseInt(window.getComputedStyle(div).fontSize);
+            if (fontSizeInput) fontSizeInput.value = currentSize || 16;
+        }
+
         updatePropertiesPanel(div);
     }
 
@@ -522,6 +560,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Toggle Vertices ---
     const toggleVertices = document.getElementById('toggle-vertices');
+
+    // --- Font Size Control Logic ---
+    const fontSizeInput = document.getElementById('label-font-size');
+    if (fontSizeInput) {
+        fontSizeInput.addEventListener('input', (e) => {
+            if (selectedObject && selectedObject.classList && selectedObject.classList.contains('math-label')) {
+                const size = e.target.value;
+                selectedObject.style.fontSize = size + 'px';
+
+                // Update model
+                const l = labels.find(lb => lb.element === selectedObject);
+                if (l) l.fontSize = size;
+
+                saveToLocalStorage();
+            }
+        });
+    }
 
     toggleVertices.addEventListener('change', (e) => {
         const isVisible = e.target.checked;
@@ -732,7 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return JSON.stringify({
             nodes: nodes.map(n => ({ id: n.id(), x: n.x(), y: n.y() })),
             edges: edges.map(e => ({ start: e.startNode, end: e.endNode, type: e.edgeType })),
-            labels: labels.map(l => ({ id: l.id, x: l.x, y: l.y, text: l.text }))
+            labels: labels.map(l => ({ id: l.id, x: l.x, y: l.y, text: l.text, fontSize: l.fontSize }))
         });
     }
 
