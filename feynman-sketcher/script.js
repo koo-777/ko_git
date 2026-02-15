@@ -537,40 +537,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnExportPng.addEventListener('click', () => {
         deselectAll();
-        // Konva to DataURL
-        // Hide grid?
-        gridLayer.hide();
 
-        // Add white background for export
-        const bg = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: stage.width(),
-            height: stage.height(),
-            fill: 'white'
+        // Capture the entire canvas area (inc. labels)
+        const canvasArea = document.querySelector('.canvas-area');
+
+        // Temporarily hide grid for clean export
+        const originalBg = canvasArea.style.backgroundImage;
+        canvasArea.style.backgroundImage = 'none';
+        canvasArea.style.backgroundColor = 'white';
+
+        html2canvas(canvasArea).then(canvas => {
+            const dataURL = canvas.toDataURL('image/png');
+            downloadURI(dataURL, 'feynman-diagram.png');
+
+            // Restore
+            canvasArea.style.backgroundImage = originalBg;
+            canvasArea.style.backgroundColor = '';
+        }).catch(err => {
+            console.error("Export failed:", err);
+            alert("Export failed. See console.");
+            // Restore
+            canvasArea.style.backgroundImage = originalBg;
+            canvasArea.style.backgroundColor = '';
         });
-        gridLayer.add(bg);
-        bg.moveToBottom();
-        gridLayer.show(); // Show layer but with white bg covering grid? 
-        // No, gridLayer has the grid pattern in CSS? No, grid is CSS in style.css. 
-        // The gridLayer in Konva is empty? Ah, style.css has background-image.
-        // Konva export won't capture CSS background.
-        // So we MUST add a white rect.
-
-        // But we want to hide the grid dots/lines if they are in CSS? Yes.
-        // If we put a white rect in a bottom layer, it will cover transparent areas.
-
-        const exportLayer = new Konva.Layer();
-        stage.add(exportLayer);
-        exportLayer.add(bg);
-        exportLayer.moveToBottom();
-
-        const dataURL = stage.toDataURL({ pixelRatio: 2 });
-        downloadURI(dataURL, 'feynman-diagram.png');
-
-        // Cleanup
-        exportLayer.destroy();
-        gridLayer.show();
     });
 
     function downloadURI(uri, name) {
