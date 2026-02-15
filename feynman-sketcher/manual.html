@@ -157,6 +157,20 @@
         <h3>画像として保存</h3>
         <p>右側のパネルにある <strong>[Download PNG]</strong> ボタンを押すと、現在のキャンバスを画像ファイルとしてダウンロードできます。</p>
 
+        <h3>保存と復元 (Pause / Resume)</h3>
+        <p>作業を中断して後で再開したい場合や、データをバックアップしたい場合は、JSON形式で保存できます。</p>
+        <ul>
+            <li>
+                <strong>保存 (Export)</strong>:<br>
+                右側パネルの <strong>[Export Data]</strong> ボタンを押すと、現在の図のデータ（JSON形式のテキスト）が表示されます。<br>
+                このテキストをコピーして、メモ帳などに保存してください。
+            </li>
+            <li>
+                <strong>復元 (Import)</strong>:<br>
+                <strong>[Import Data]</strong> ボタンを押し、保存しておいたテキストを貼り付けて <strong>[Load]</strong> を押すと、図が復元されます。
+            </li>
+        </ul>
+
         <h3>論文用 (TikZ)</h3>
         <p><strong>[Generate TikZ]</strong> ボタンを押すと、LaTeX用のコードが生成されます。</p>
         <p>このコードを使用するには、LaTeXのプリアンブルに <code>\usepackage{tikz-feynman}</code> を追加してください。</p>
