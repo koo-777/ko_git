@@ -818,161 +818,65 @@ document.addEventListener('DOMContentLoaded', () => {
             const json = localStorage.getItem('feynman_sketcher_state');
             if (!json) return false;
 
-            try {
-                const state = JSON.parse(json);
 
-                // Clear current
-                nodes.forEach(n => n.destroy());
-                edges.forEach(e => e.destroy());
-                labels.forEach(l => l.element.remove());
-                nodes = [];
-                edges = [];
-                labels = [];
 
-                // Restore Nodes
-                state.nodes.forEach(nData => {
-                    const node = new Konva.Circle({
-                        x: nData.x,
-                        y: nData.y,
-                        radius: 6,
-                        fill: '#000',
-                        stroke: 'white',
-                        strokeWidth: 2,
-                        draggable: true,
-                        dragBoundFunc: function (pos) {
-                            const gridSize = 20;
-                            return {
-                                x: Math.round(pos.x / gridSize) * gridSize,
-                                y: Math.round(pos.y / gridSize) * gridSize
-                            };
-                        },
-                        name: 'vertex',
-                        id: nData.id
-                    });
-                    // Attach events
-                    node.on('mouseover', () => {
-                        document.body.style.cursor = 'pointer';
-                        if (currentTool !== 'select' && currentTool !== 'vertex') {
-                            node.scale({ x: 1.5, y: 1.5 });
-                        }
-                    });
-                    node.on('mouseout', () => {
-                        document.body.style.cursor = 'default';
-                        node.scale({ x: 1, y: 1 });
-                    });
-                    node.on('click', (e) => {
-                        e.cancelBubble = true;
-                        handleNodeClick(node);
-                    });
-                    node.on('dragmove', () => updateConnectedEdges(node));
-                    node.on('dragstart', () => {
-                        if (currentTool !== 'select') node.stopDrag();
-                        else {
-                            // selectObject(node); // optionally select on drag start
-                        }
-                    });
-                    node.on('dragend', () => {
-                        const gridSize = 20;
-                        const x = Math.round(node.x() / gridSize) * gridSize;
-                        const y = Math.round(node.y() / gridSize) * gridSize;
-                        node.position({ x, y });
-                        updateConnectedEdges(node);
-                        nodeLayer.batchDraw();
-                        saveToLocalStorage(); // Save on move
-                    });
+            // --- JSON modal logic ---
+            const btnExportJson = document.getElementById('btn-export-json');
+            const btnImportJson = document.getElementById('btn-import-json');
+            const jsonModal = document.getElementById('json-modal');
+            const jsonIO = document.getElementById('json-io');
+            const btnJsonAction = document.getElementById('btn-json-action');
+            const btnJsonClose = document.getElementById('btn-json-close');
+            const closeJsonModal = document.getElementById('close-json-modal');
 
-                    nodes.push(node);
-                    nodeLayer.add(node);
+            let isExportMode = true;
+
+            if (btnExportJson) {
+                btnExportJson.addEventListener('click', () => {
+                    isExportMode = true;
+                    document.getElementById('json-modal-title').innerText = "Export JSON Data";
+                    document.getElementById('json-modal-desc').innerText = "Copy this code to save or share your diagram.";
+                    btnJsonAction.innerText = "Copy to Clipboard";
+                    jsonIO.readOnly = true;
+                    jsonIO.value = getSerializedState();
+                    jsonModal.classList.remove('hidden');
                 });
 
-                // Restore Edges
-                state.edges.forEach(eData => {
-                    const s = nodes.find(n => n.id() === eData.start);
-                    const e = nodes.find(n => n.id() === eData.end);
-                    if (s && e) {
-                        // createEdge adds to edges array and layer
-                        // Warning: createEdge in current code does NOT trigger saveToLocalStorage yet, 
-                        // but we will add it. To prevent double save during load, we might need flag.
-                        // But duplicates are okay for redundancy, or we pass a flag.
-                        // Actually, I'll update createEdge to save, so here I should avoid double save 
-                        // or just let it save.
-                        // To avoid ID generation issues or side effects, use the internal logic?
-                        // createEdge uses startNode.id() so it's safe for IDs.
-                        createEdge(s, e, eData.type, false);
+                btnImportJson.addEventListener('click', () => {
+                    isExportMode = false;
+                    document.getElementById('json-modal-title').innerText = "Import JSON Data";
+                    document.getElementById('json-modal-desc').innerText = "Paste your JSON code here and click Load.";
+                    btnJsonAction.innerText = "Load Data";
+                    jsonIO.readOnly = false;
+                    jsonIO.value = "";
+                    jsonModal.classList.remove('hidden');
+                });
+
+                btnJsonAction.addEventListener('click', () => {
+                    if (isExportMode) {
+                        jsonIO.select();
+                        document.execCommand('copy');
+                        alert("Copied to clipboard!");
+                    } else {
+                        const json = jsonIO.value;
+                        if (loadStateFromJson(json)) {
+                            jsonModal.classList.add('hidden');
+                            alert("Diagram loaded successfully!");
+                        }
                     }
                 });
 
-                // Restore Labels
-                state.labels.forEach(lData => {
-                    addLabel(lData.x, lData.y, lData.text, false);
-                });
-
-                nodeLayer.draw();
-                edgeLayer.draw();
-                return true;
-            } catch (e) {
-                console.error("Failed to load state", e);
-                return false;
-            }
-        }
-
-    // --- JSON modal logic ---
-    const btnExportJson = document.getElementById('btn-export-json');
-        const btnImportJson = document.getElementById('btn-import-json');
-        const jsonModal = document.getElementById('json-modal');
-        const jsonIO = document.getElementById('json-io');
-        const btnJsonAction = document.getElementById('btn-json-action');
-        const btnJsonClose = document.getElementById('btn-json-close');
-        const closeJsonModal = document.getElementById('close-json-modal');
-
-        let isExportMode = true;
-
-        if (btnExportJson) {
-            btnExportJson.addEventListener('click', () => {
-                isExportMode = true;
-                document.getElementById('json-modal-title').innerText = "Export JSON Data";
-                document.getElementById('json-modal-desc').innerText = "Copy this code to save or share your diagram.";
-                btnJsonAction.innerText = "Copy to Clipboard";
-                jsonIO.readOnly = true;
-                jsonIO.value = getSerializedState();
-                jsonModal.classList.remove('hidden');
-            });
-
-            btnImportJson.addEventListener('click', () => {
-                isExportMode = false;
-                document.getElementById('json-modal-title').innerText = "Import JSON Data";
-                document.getElementById('json-modal-desc').innerText = "Paste your JSON code here and click Load.";
-                btnJsonAction.innerText = "Load Data";
-                jsonIO.readOnly = false;
-                jsonIO.value = "";
-                jsonModal.classList.remove('hidden');
-            });
-
-            btnJsonAction.addEventListener('click', () => {
-                if (isExportMode) {
-                    jsonIO.select();
-                    document.execCommand('copy');
-                    alert("Copied to clipboard!");
-                } else {
-                    const json = jsonIO.value;
-                    if (loadStateFromJson(json)) {
+                [btnJsonClose, closeJsonModal].forEach(el => {
+                    el.addEventListener('click', () => {
                         jsonModal.classList.add('hidden');
-                        alert("Diagram loaded successfully!");
-                    }
-                }
-            });
-
-            [btnJsonClose, closeJsonModal].forEach(el => {
-                el.addEventListener('click', () => {
-                    jsonModal.classList.add('hidden');
+                    });
                 });
-            });
-        }
+            }
 
-        // Init
-        if (!loadFromLocalStorage()) {
-            // Starter nodes if no save
-            createNode(width / 2 - 100, height / 2);
-            createNode(width / 2 + 100, height / 2);
-        }
-    });
+            // Init
+            if (!loadFromLocalStorage()) {
+                // Starter nodes if no save
+                createNode(width / 2 - 100, height / 2);
+                createNode(width / 2 + 100, height / 2);
+            }
+        });
