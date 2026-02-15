@@ -778,9 +778,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 node.on('dragmove', () => updateConnectedEdges(node));
                 node.on('dragstart', () => {
                     if (currentTool !== 'select') node.stopDrag();
-                    else {
-                        // selectObject(node); // optionally select on drag start
-                    }
                 });
                 node.on('dragend', () => {
                     const gridSize = 20;
@@ -810,73 +807,78 @@ document.addEventListener('DOMContentLoaded', () => {
                 addLabel(lData.x, lData.y, lData.text, false);
             });
 
-            function loadFromLocalStorage() {
-                const json = localStorage.getItem('feynman_sketcher_state');
-                if (!json) return false;
-                return loadStateFromJson(json);
-            }
-            const json = localStorage.getItem('feynman_sketcher_state');
-            if (!json) return false;
+            nodeLayer.draw();
+            edgeLayer.draw();
+            return true;
+        } catch (e) {
+            console.error("Failed to load state", e);
+            return false;
+        }
+    }
 
+    function loadFromLocalStorage() {
+        const json = localStorage.getItem('feynman_sketcher_state');
+        if (!json) return false;
+        return loadStateFromJson(json);
+    }
 
+    // --- JSON modal logic ---
+    const btnExportJson = document.getElementById('btn-export-json');
+    const btnImportJson = document.getElementById('btn-import-json');
+    const jsonModal = document.getElementById('json-modal');
+    const jsonIO = document.getElementById('json-io');
+    const btnJsonAction = document.getElementById('btn-json-action');
+    const btnJsonClose = document.getElementById('btn-json-close');
+    const closeJsonModal = document.getElementById('close-json-modal');
 
-            // --- JSON modal logic ---
-            const btnExportJson = document.getElementById('btn-export-json');
-            const btnImportJson = document.getElementById('btn-import-json');
-            const jsonModal = document.getElementById('json-modal');
-            const jsonIO = document.getElementById('json-io');
-            const btnJsonAction = document.getElementById('btn-json-action');
-            const btnJsonClose = document.getElementById('btn-json-close');
-            const closeJsonModal = document.getElementById('close-json-modal');
+    let isExportMode = true;
 
-            let isExportMode = true;
+    if (btnExportJson) {
+        btnExportJson.addEventListener('click', () => {
+            isExportMode = true;
+            document.getElementById('json-modal-title').innerText = "Export JSON Data";
+            document.getElementById('json-modal-desc').innerText = "Copy this code to save or share your diagram.";
+            btnJsonAction.innerText = "Copy to Clipboard";
+            jsonIO.readOnly = true;
+            jsonIO.value = getSerializedState();
+            jsonModal.classList.remove('hidden');
+        });
 
-            if (btnExportJson) {
-                btnExportJson.addEventListener('click', () => {
-                    isExportMode = true;
-                    document.getElementById('json-modal-title').innerText = "Export JSON Data";
-                    document.getElementById('json-modal-desc').innerText = "Copy this code to save or share your diagram.";
-                    btnJsonAction.innerText = "Copy to Clipboard";
-                    jsonIO.readOnly = true;
-                    jsonIO.value = getSerializedState();
-                    jsonModal.classList.remove('hidden');
-                });
+        btnImportJson.addEventListener('click', () => {
+            isExportMode = false;
+            document.getElementById('json-modal-title').innerText = "Import JSON Data";
+            document.getElementById('json-modal-desc').innerText = "Paste your JSON code here and click Load.";
+            btnJsonAction.innerText = "Load Data";
+            jsonIO.readOnly = false;
+            jsonIO.value = "";
+            jsonModal.classList.remove('hidden');
+        });
 
-                btnImportJson.addEventListener('click', () => {
-                    isExportMode = false;
-                    document.getElementById('json-modal-title').innerText = "Import JSON Data";
-                    document.getElementById('json-modal-desc').innerText = "Paste your JSON code here and click Load.";
-                    btnJsonAction.innerText = "Load Data";
-                    jsonIO.readOnly = false;
-                    jsonIO.value = "";
-                    jsonModal.classList.remove('hidden');
-                });
-
-                btnJsonAction.addEventListener('click', () => {
-                    if (isExportMode) {
-                        jsonIO.select();
-                        document.execCommand('copy');
-                        alert("Copied to clipboard!");
-                    } else {
-                        const json = jsonIO.value;
-                        if (loadStateFromJson(json)) {
-                            jsonModal.classList.add('hidden');
-                            alert("Diagram loaded successfully!");
-                        }
-                    }
-                });
-
-                [btnJsonClose, closeJsonModal].forEach(el => {
-                    el.addEventListener('click', () => {
-                        jsonModal.classList.add('hidden');
-                    });
-                });
-            }
-
-            // Init
-            if (!loadFromLocalStorage()) {
-                // Starter nodes if no save
-                createNode(width / 2 - 100, height / 2);
-                createNode(width / 2 + 100, height / 2);
+        btnJsonAction.addEventListener('click', () => {
+            if (isExportMode) {
+                jsonIO.select();
+                document.execCommand('copy');
+                alert("Copied to clipboard!");
+            } else {
+                const json = jsonIO.value;
+                if (loadStateFromJson(json)) {
+                    jsonModal.classList.add('hidden');
+                    alert("Diagram loaded successfully!");
+                }
             }
         });
+
+        [btnJsonClose, closeJsonModal].forEach(el => {
+            el.addEventListener('click', () => {
+                jsonModal.classList.add('hidden');
+            });
+        });
+    }
+
+    // Init
+    if (!loadFromLocalStorage()) {
+        // Starter nodes if no save
+        createNode(width / 2 - 100, height / 2);
+        createNode(width / 2 + 100, height / 2);
+    }
+});
