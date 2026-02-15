@@ -31,12 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Smart Layering Logic ---
     const konvaContainer = document.getElementById('konva-container');
-    stage.on('mousemove', (e) => {
+
+    document.addEventListener('mousemove', (e) => {
         if (isDragging) {
             konvaContainer.style.pointerEvents = 'auto';
             return;
         }
-        const shape = stage.getIntersection(stage.getPointerPosition());
+
+        // Calculate position relative to stage
+        const rect = konvaContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Check if cursor is within stage bounds
+        if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+            return; // Outside stage
+        }
+
+        const shape = stage.getIntersection({ x, y });
         if (shape) {
             konvaContainer.style.pointerEvents = 'auto';
             document.body.style.cursor = 'pointer';
