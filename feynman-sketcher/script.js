@@ -546,15 +546,29 @@ document.addEventListener('DOMContentLoaded', () => {
             canvasArea.style.backgroundImage = 'none';
             canvasArea.style.backgroundColor = 'white';
 
-            html2canvas(canvasArea).then(canvas => {
+            // Hide MathJax assistive MML explicitly
+            const assistiveMMLs = document.querySelectorAll('mjx-assistive-mml');
+            assistiveMMLs.forEach(el => el.style.display = 'none');
+
+            html2canvas(canvasArea, {
+                useCORS: true,
+                scale: 2, // High resolution
+                ignoreElements: (element) => {
+                    // Ignore assistive MML
+                    if (element.tagName.toLowerCase() === 'mjx-assistive-mml') return true;
+                    return false;
+                }
+            }).then(canvas => {
                 // Restore styles
                 canvasArea.style.backgroundImage = originalBg;
                 canvasArea.style.backgroundColor = '';
+                assistiveMMLs.forEach(el => el.style.display = '');
                 resolve(canvas);
             }).catch(err => {
                 // Restore styles
                 canvasArea.style.backgroundImage = originalBg;
                 canvasArea.style.backgroundColor = '';
+                assistiveMMLs.forEach(el => el.style.display = '');
                 reject(err);
             });
         });
