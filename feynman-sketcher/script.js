@@ -608,6 +608,10 @@ document.addEventListener('DOMContentLoaded', () => {
             html2canvas(canvasArea, {
                 useCORS: true,
                 scale: 2, // High resolution
+                x: minX,
+                y: minY,
+                width: maxX - minX,
+                height: maxY - minY,
                 ignoreElements: (element) => {
                     // Ignore assistive MML
                     if (element.tagName.toLowerCase() === 'mjx-assistive-mml') return true;
