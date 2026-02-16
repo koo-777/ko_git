@@ -3,65 +3,74 @@
 便利なWebツールを集約したプロジェクト（モノレポ）です。
 Vercelのサブディレクトリ機能を活用し、単一ドメインで複数のツールを管理しています。
 
-## 収録ツール
+## 🏗️ Web Applications
 
-### 1. [文字数カウント](/char-count/) (`/char-count/`)
-- テキストの文字数をリアルタイムで計測
-- 空白・改行の除外オプション
-- 40文字/行のガイドライン表示
+### 1. [Feynman Diagram Sketcher](/feynman-sketcher/) (`/feynman-sketcher/`)
+素粒子物理学で使用される「ファインマン・ダイアグラム」をブラウザ上で直感的に描画できるツールです。
+- **描画**: フェルミオン、光子、グルーオン、スカラー粒子のプロパゲーターを描画。
+- **編集**: 頂点のドラッグ移動（接続維持）、削除、矢印反転。
+- **ラベル**: MathJax (LaTeX) 対応の数式ラベル。ラベルは線の下（背面）に配置され、操作性を損ないません。
+- **エクスポート**:
+    - **PNG/PDF**: 高解像度保存（描画範囲を自動計算して余白をカット）。
+    - **TikZ**: LaTeX文書用のコード生成。
+    - **SVG/JSON**: ベクター保存および作業状態の復元。
 
-### 2. [WEBガラポン](/garapon/) (`/garapon/`)
-- ブラウザで動く抽選器
-- 抽選内容のカスタマイズが可能（当たり、はずれの設定等）
-- ローカルストレージ対応（予定）
+### 2. [Physics Constants & Units](/physics-constants/) (`/physics-constants/`)
+物理学の研究・学習に役立つ計算ダッシュボードです。
+- **相対論的運動学**: エネルギー・運動量・質量の相互計算。
+- **物理定数表**: 主要な物理定数の検索とコピー。
+- **単位変換**: エネルギー (eV, J)、断面積 (barn)、自然単位系の変換に対応。
 
 ### 3. [Simple Image to PDF](/img-to-pdf/) (`/img-to-pdf/`)
-- 複数の画像をまとめてPDFに変換
-- ブラウザ完結で安全
+- 複数の画像をアップロードしてPDFに結合・変換。
+- 全処理がクライアントサイドで行われるため、プライバシーが保護されます。
 
-### 4. [Diag-Lib Gallery](/diag-lib/) (`/diag-lib/`)
-- 高機能な図解ギャラリー
-- Next.js製のモダンなUI
+### 4. [Base Converter](/base-converter/) (`/base-converter/`)
+- 2進数・10進数・16進数をリアルタイムで相互変換。
+- シンプルで直感的なUI。
 
-### 5. [Base Converter](/base-converter/) (`/base-converter/`)
-- 2進数・10進数・16進数をリアルタイム相互変換
-- 究極にシンプルなUI
+### 5. [WEB Galapon (WEBガラポン)](/garapon/) (`/garapon/`)
+- イベントで使えるブラウザ抽選器。
+- アニメーション付きで盛り上がります。
 
-## ディレクトリ構成
+### 6. [Character Count (文字数カウント)](/char-count/) (`/char-count/`)
+- 文字数をリアルタイム計測。
+- 改行・空白の除外オプション付き。
 
-```bash
-.
-├── assets/           # 共通リソース（CSS/JS）
-│   ├── css/
-│   └── js/           # グローバルナビゲーション等
-├── char-count/       # 文字数カウントツール
-├── garapon/          # ガラポン抽選ツール
-├── img-to-pdf/       # 画像PDF変換ツール
-├── privacy/          # プライバシーポリシー
-├── scripts/          # 開発・運用スクリプト
-├── index.html        # ポータルサイト（トップページ）
-├── robots.txt        # クローラー設定
-├── sitemap.xml       # サイトマップ
-├── vercel.json       # Vercel設定（ルーティング/CleanURLs）
-└── README.md         # 本ファイル
-```
+### 7. [Diag-Lib Gallery](/diag-lib/) (`/diag-lib/`)
+- Next.js製の高機能図解ギャラリー（現在統合調整中）。
 
-## 技術スタック
+---
 
-- **Core**: HTML5, CSS3, Vanilla JavaScript
-- **Deployment**: Vercel (Clean URLs enabled)
-- **Structure**: Monorepo
+## 🧩 Browser Extensions
+
+### Simple Work Timer
+Chrome拡張機能として開発された、シンプルな作業時間計測ツールです。
+- ツールバーから手軽にスタート/ストップ。
+- ブラウザを閉じても計測状態を永続化。
+
+---
+
+## 🛠️ 技術スタック
+
+- **Core**: HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Frameworks/Libs**:
+    - **Konva.js**: キャンバス描画 (Feynman Sketcher)
+    - **MathJax**: 数式レンダリング
+    - **html2canvas / jsPDF**: 画像処理
+    - **Next.js**: (Diag-Lib)
+- **Deployment**: Vercel (Clean URLs, Monorepo support)
 
 ## 開発・実行
 
-ローカルで動作確認をするには、プロジェクトルートで簡易サーバーを立ち上げてください。
+プロジェクトルートで簡易サーバーを立ち上げることで、ローカル環境で動作確認が可能です。
 
 ```bash
-# Pythonの場合
+# Python 3
 python3 -m http.server 3000
 
-# Node.js (serve) の場合
+# Node.js (serve)
 npx serve .
 ```
 
-ブラウザで `http://localhost:3000` にアクセスするとポータルサイトが表示されます。
+ブラウザで `http://localhost:3000` にアクセスすると、ポータルサイト（`index.html`）が表示されます。
