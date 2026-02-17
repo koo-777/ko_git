@@ -78,7 +78,7 @@ npx serve .
 新しいページを追加する際は、必ず `<head>` タグ内に以下のスクリプト読み込み記述を追加してください。
 
 ```html
-<script src="/assets/js/analytics.js"></script>
+<script async src="/assets/js/analytics.js"></script>
 ```
 
 タグID等の管理は `assets/js/analytics.js` で一元化されています。
